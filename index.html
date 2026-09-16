@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="roa2rF9GGiR6Gm7LehHafC">
+<head data-page-node-id="r6hC7qApN3JVZdoLAnHbEA">
+<meta charset="UTF-8" data-page-node-id="FPNYiWqHCvWSsBsmMq8kZ0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" data-page-node-id="PZbj3pzqDe67huyFICP5Aq">
+<meta name="theme-color" content="#FFF8F1" data-page-node-id="s8EsqEEe00K4VnCT80TLGD">
+<title>暴打鲜果茶 · 解压小游戏</title>
+<style>
+/* ========== 基础 ========== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --cream:#FFF8F1; --ink:#5B4636; --ink-soft:#A08D7E; --line:#F2E5D9;
+  --orange:#FF8F5E; --orange-d:#E87546;
+  --shadow-s:0 4px 10px rgba(190,150,120,.12);
+}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:radial-gradient(120% 80% at 50% 0%,#FFF3E4 0%,#FFF8F1 45%,#FDF4F7 100%);
+  color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+}
+
+/* ========== 手机外框 ========== */
+#app{
+  position:relative;width:100%;max-width:420px;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+@media(min-width:520px){
+  #app{height:min(880px,96vh);border-radius:36px;
+    box-shadow:0 30px 70px rgba(180,140,110,.22),0 0 0 1px rgba(255,255,255,.9);
+    background:rgba(255,255,255,.45);}
+}
+.blob{position:absolute;border-radius:50%;opacity:.5;pointer-events:none;animation:float 9s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.05)}}
+
+/* ========== 顶栏 ========== */
+.topbar{position:relative;z-index:6;flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:14px 18px 6px;}
+.brand{display:flex;align-items:baseline;gap:8px;}
+.brand h1{font-size:19px;font-weight:800;letter-spacing:.5px;}
+.brand .tag{font-size:10px;font-weight:700;color:#C77B5E;background:#FFEBDD;border-radius:20px;padding:2px 8px;flex:0 0 auto;}
+.top-actions{margin-left:auto;display:flex;gap:8px;}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;background:#fff;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
+  box-shadow:var(--shadow-s);transition:.15s;
+}
+.icon-btn:active{transform:scale(.9);}
+.icon-btn.hidden{display:none;}
+
+/* ========== 屏幕 ========== */
+.screen{
+  position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;
+  padding:0 18px calc(14px + env(safe-area-inset-bottom));
+  opacity:0;pointer-events:none;transform:translateY(14px) scale(.98);
+  transition:opacity .32s ease,transform .32s cubic-bezier(.22,1.2,.36,1);
+}
+.screen.active{opacity:1;pointer-events:auto;transform:none;}
+
+/* ========== 第一屏：选水果（内容可滚动，按钮常驻底部） ========== */
+.pick-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
+.pick-foot{flex:0 0 auto;padding-top:10px;position:relative;}
+.pick-foot::before{
+  content:"";position:absolute;left:-18px;right:-18px;top:-14px;height:14px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,248,241,0),rgba(255,248,241,.96));
+}
+.pick-head{padding:2px 2px 11px;}
+.pick-head h2{font-size:16px;font-weight:800;}
+.pick-head p{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.5;}
+/* 固定 5 列 → 20 种水果正好铺满 4 行 */
+.fruit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px 6px;}
+@media(max-width:360px){
+  .fruit-grid{gap:6px 5px;}
+  .fruit-chip{padding:6px 1px 5px;border-radius:15px;}
+  .fruit-chip .nm{font-size:9.5px;}
+}
+.fruit-chip{
+  position:relative;background:#fff;border:2.5px solid var(--line);border-radius:18px;
+  padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;box-shadow:var(--shadow-s);
+  transition:transform .16s cubic-bezier(.2,1.5,.4,1),border-color .16s,box-shadow .16s;
+}
+.fruit-chip .em{transition:transform .2s;display:flex;align-items:center;justify-content:center;}
+.fruit-chip .nm{font-size:10.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap;max-width:100%;overflow:hidden;}
+.fruit-chip:active{transform:scale(.94);}
+.fruit-chip.on{border-color:var(--c);transform:translateY(-4px) scale(1.04);box-shadow:0 9px 16px var(--cg);}
+.fruit-chip.on .nm{color:var(--ink);}
+.fruit-chip.on .em{transform:scale(1.1) rotate(-6deg);}
+.fruit-chip .tick{
+  position:absolute;top:-5px;right:-5px;width:19px;height:19px;border-radius:50%;
+  background:var(--c);color:#fff;font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;border:2px solid #fff;
+  transform:scale(0);transition:transform .2s cubic-bezier(.2,1.6,.4,1);
+}
+.fruit-chip.on .tick{transform:scale(1);}
+
+.basket{
+  margin-top:11px;background:#fff;border-radius:22px;border:2px dashed var(--line);
+  padding:10px 13px;min-height:58px;display:flex;flex-direction:column;gap:7px;
+}
+.basket .bl{font-size:11.5px;font-weight:800;color:var(--ink-soft);white-space:nowrap;}
+.basket .bl b{color:#C77B5E;}
+.basket .chips{display:flex;gap:6px;flex-wrap:wrap;}
+/* 已选水果：点名字移除，⊖ ⊕ 调颗数（自由配比） */
+.bchip{
+  background:#FFF4E6;border-radius:14px;padding:3px 6px;font-size:14px;
+  display:flex;align-items:center;gap:3px;
+  animation:pop .3s cubic-bezier(.2,1.6,.4,1);
+}
+.bchip .em{display:flex;align-items:center;cursor:pointer;}
+.bchip small{font-size:10px;color:var(--ink-soft);font-weight:700;cursor:pointer;white-space:nowrap;}
+.bchip .num{
+  min-width:15px;text-align:center;font-size:12.5px;font-weight:900;color:var(--orange-d);
+}
+.bchip .cnt{
+  width:19px;height:19px;border-radius:7px;border:1.5px solid #F0DCC4;background:#fff;
+  color:#B08D6A;font-size:13px;font-weight:900;line-height:1;padding:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;
+  transition:transform .12s,background .12s;
+}
+.bchip .cnt:active{transform:scale(.84);background:#FFF0DC;}
+.bchip .cnt[disabled]{opacity:.32;}
+.basket .empty{font-size:12px;color:#CDBBAE;}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* 灵感搭配 */
+.inspire{margin-top:13px;}
+.inspire .ttl{font-size:11.5px;font-weight:800;color:var(--ink-soft);margin-bottom:8px;}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.preset{
+  background:#fff;border:2px solid var(--line);border-radius:18px;
+  padding:8px 11px;cursor:pointer;display:flex;flex-direction:column;gap:2px;
+  box-shadow:var(--shadow-s);transition:.16s;
+}
+.preset:active{transform:scale(.96);}
+.preset .ems{font-size:15px;letter-spacing:1px;display:flex;align-items:center;gap:2px;height:19px;}
+.preset .pn{font-size:11.5px;font-weight:800;}
+.preset .pd{font-size:9.5px;color:var(--ink-soft);font-weight:700;}
+.preset.on{border-color:#FFC08F;background:#FFF7F0;}
+.tipcard{
+  margin-top:11px;background:#FFFCF0;border:2px solid #FFF0C9;border-radius:18px;
+  padding:11px 13px;font-size:11.5px;line-height:1.6;color:#A08040;font-weight:700;
+}
+.tipcard b{color:#E87546;}
+
+/* 按钮 */
+.btn{
+  width:100%;border:none;border-radius:22px;font-family:inherit;font-size:16px;
+  font-weight:800;color:#fff;padding:15px;cursor:pointer;transition:.16s;
+  background:linear-gradient(180deg,#FFB27A,#FF8F5E);
+  box-shadow:0 7px 0 #E87546,0 12px 20px rgba(232,117,70,.28);
+}
+.btn:active{transform:translateY(4px);box-shadow:0 3px 0 #E87546,0 6px 12px rgba(232,117,70,.25);}
+.btn:disabled{background:#EFE3D9;box-shadow:0 6px 0 #E3D5C8;color:#C4B2A4;cursor:not-allowed;transform:none;}
+.btn.ghost{background:#fff;color:var(--ink);border:2.5px solid var(--line);box-shadow:0 6px 0 #F0E3D8;}
+.btn.ghost:active{box-shadow:0 2px 0 #F0E3D8;transform:translateY(3px);}
+.btn-row{display:flex;gap:10px;margin-top:10px;}
+.btn.small{font-size:14px;padding:12px;}
+
+/* ========== 第二屏：暴打 ========== */
+.play-top{display:flex;gap:8px;padding:2px 0 0;}
+.meter{
+  flex:1;background:#fff;border-radius:16px;padding:7px 12px;box-shadow:var(--shadow-s);
+  display:flex;align-items:center;gap:6px;border:2px solid #fff;
+}
+.meter .k{font-size:11px;font-weight:700;color:var(--ink-soft);}
+.meter .v{font-size:15px;font-weight:900;margin-left:auto;color:var(--orange-d);}
+.meter .v.g{color:#5EC79B;}
+.meter .v small{font-size:9.5px;font-weight:700;color:var(--ink-soft);margin-left:1px;}
+
+.cup-wrap{
+  position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  transition:transform .55s cubic-bezier(.5,0,.75,.4),opacity .5s;
+}
+.cup-wrap.shake{animation:shakeCup .13s;}
+@keyframes shakeCup{0%,100%{transform:translate(0,0)}30%{transform:translate(-5px,2px)}65%{transform:translate(5px,-1px)}}
+.cup-wrap.away{transform:translate(-46%,-10%) scale(.7) rotate(-34deg);opacity:0;}
+
+#hitzone{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+/* --- 杯子 --- */
+.cup{position:relative;width:206px;height:262px;z-index:1;}
+.cup-body{
+  position:absolute;inset:0;overflow:hidden;
+  border-radius:16px 16px 92px 92px/16px 16px 60px 60px;
+  background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(226,240,246,.55) 55%,rgba(255,255,255,.85));
+  border:3px solid rgba(255,255,255,.98);
+  box-shadow:
+    inset 0 -14px 26px rgba(160,130,110,.13),
+    inset 5px 0 14px rgba(255,255,255,.95),
+    inset -6px 0 14px rgba(190,210,225,.4),
+    0 16px 30px rgba(180,145,120,.22);
+}
+.cup-body::after{  /* 玻璃反光，画在最上层 */
+  content:"";position:absolute;top:30px;left:16px;width:15px;height:118px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0));
+  transform:rotate(4deg);pointer-events:none;z-index:5;
+}
+.cup-rim{
+  position:absolute;top:-3px;left:-6px;right:-6px;height:20px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.98);
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(230,242,248,.22));
+  box-shadow:0 3px 8px rgba(170,140,120,.14);z-index:4;
+}
+/* --- 雪克杯盖：半透明圆拱顶 + 中间捣棒插口 --- */
+.cup-lid{
+  position:absolute;top:-30px;left:26px;right:26px;height:46px;
+  border-radius:52px 52px 14px 14px/66px 66px 12px 12px;
+  background:linear-gradient(155deg,rgba(255,255,255,.94),rgba(216,233,242,.6) 58%,rgba(255,255,255,.9));
+  border:3px solid rgba(255,255,255,.98);
+  box-shadow:inset -5px 0 10px rgba(170,195,210,.35),inset 4px 0 8px rgba(255,255,255,.9),0 5px 12px rgba(170,145,120,.16);
+  z-index:5;pointer-events:none;
+}
+.cup-lid::after{                             /* 盖口：捣棒从这里插进去 */
+  content:"";position:absolute;left:50%;top:3px;width:30px;height:13px;margin-left:-15px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(90,110,122,.5),rgba(90,110,122,.22));
+  box-shadow:inset 0 2px 4px rgba(60,80,92,.45),inset 0 -1px 2px rgba(255,255,255,.7);
+}
+/* --- 杯身刻度：MAX 500ml → MIN（塑料雪克杯的印刷刻度） --- */
+.cup-scale{
+  position:absolute;right:15px;top:74px;bottom:44px;z-index:2;
+  display:flex;flex-direction:column;justify-content:space-between;
+  pointer-events:none;
+}
+.cup-scale i{
+  display:flex;align-items:center;gap:3px;justify-content:flex-end;
+  font-style:normal;font-size:7.5px;font-weight:800;color:rgba(96,116,126,.5);letter-spacing:.3px;
+}
+.cup-scale i::before{content:"";width:11px;height:1.5px;border-radius:1px;background:currentColor;opacity:.75;}
+/* 液体层：内部坐标 200 × 204 */
+.liquid-box{position:absolute;left:0;right:0;bottom:0;top:52px;}
+/* 果肉层排在液体「前面」→ 沉进果汁的果肉是「透过果汁」看到的 */
+.fruits-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+/* 杯内四溅的茶滴层：在果肉之上、茶汤之下 —— 液滴只在液面以上的空杯区飞，
+   颗粒细小、数量克制，不会糊住水果 */
+#innerFx{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.in-drop{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:inDrop .55s ease-out forwards;
+}
+@keyframes inDrop{
+  0%{transform:translate(0,0) scale(1);opacity:.95}
+  58%{transform:translate(var(--ix),var(--iy)) scale(.85);opacity:.9}
+  100%{transform:translate(calc(var(--ix)*1.45),4px) scale(.45);opacity:0}
+}
+.liquid{
+  position:absolute;left:0;right:0;bottom:0;height:0%;
+  transition:height .13s cubic-bezier(.3,1.4,.5,1),background .45s,opacity .25s;
+}
+.liquid::after{
+  content:"";position:absolute;left:20px;bottom:16px;width:9px;height:54px;border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0));
+}
+/* 波浪：填充色由 --wave1/--wave2 控制 */
+.wave{position:absolute;left:0;top:-13px;width:200%;height:20px;pointer-events:none;}
+.wave svg{display:block;width:100%;height:20px;}
+.wave path{fill:var(--wave1,#F7E0B8);}
+.wave.w1{animation:waveMove 3.4s linear infinite;}
+.wave.w2{top:-8px;animation:waveMove 5.2s linear infinite reverse;opacity:.7;}
+.wave.w2 path{fill:var(--wave2,#E8C070);}
+@keyframes waveMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.foam{
+  position:absolute;left:0;right:0;height:12px;bottom:calc(100% - 5px);
+  border-radius:50%;background:var(--foam,#FFE9C0);opacity:.72;
+}
+.ripple{
+  position:absolute;left:50%;width:60px;height:16px;margin-left:-30px;bottom:0;
+  border:2.5px solid rgba(255,255,255,.9);border-radius:50%;opacity:0;pointer-events:none;
+}
+.ripple.go{animation:rip .5s ease-out;}
+@keyframes rip{from{transform:scale(.4);opacity:.85}to{transform:scale(2.3);opacity:0}}
+
+/* --- 果肉 / 冰块（尺寸全部由 JS 按真实比例给） --- */
+.bit,.ice{position:absolute;left:0;bottom:0;pointer-events:none;transform-origin:50% 50%;will-change:transform;}
+.fic{display:block;width:100%;height:100%;}
+.fic.em{display:flex;align-items:center;justify-content:center;line-height:1;}
+.fic svg{display:block;width:100%;height:100%;}
+/* 被打下来的「小块」：保留水果皮色，但用不规则裁切，不是完整的圆水果 */
+.bit.shard{overflow:hidden;}
+.bit.shard .fic{filter:saturate(1.04);}
+/* 被打下来的「果片」：果皮包边 + 果肉内芯的半月片，宽 > 高 */
+.bit.slice{
+  border-radius:50% 50% 42% 42%/60% 60% 40% 40%;
+  background:radial-gradient(ellipse at 50% 46%,var(--pulp,#FFE9A8) 0 54%,var(--skin,#E8B84E) 56% 100%);
+  box-shadow:inset 0 -3px 6px rgba(140,100,60,.24),0 1px 3px rgba(120,90,60,.2);
+  border:1.3px solid rgba(255,255,255,.5);
+}
+.bit.slice::after{                          /* 片上的果肉纹路 */
+  content:"";position:absolute;left:24%;right:24%;top:16%;bottom:16%;
+  border-radius:50%;border:1.2px solid rgba(255,255,255,.5);opacity:.7;
+}
+.drop-bit{position:absolute;left:0;bottom:0;pointer-events:none;transform-origin:50% 50%;z-index:4;}
+.ice{
+  border-radius:6px;
+  background:linear-gradient(150deg,rgba(255,255,255,.92),rgba(222,240,250,.66));
+  border:1.5px solid rgba(255,255,255,.92);opacity:.86;
+  box-shadow:inset 0 0 6px rgba(255,255,255,.9),0 1px 3px rgba(150,180,200,.25);
+}
+.waterline{position:absolute;left:0;right:0;top:0;border-top:2px dashed rgba(232,117,70,.5);pointer-events:none;}
+.wl-label{
+  position:absolute;top:52px;right:calc(100% + 9px);transform:translateY(-50%);
+  font-size:10px;font-weight:800;color:var(--orange-d);background:#FFF0E6;
+  border-radius:8px;padding:2px 6px;white-space:nowrap;box-shadow:0 1px 4px rgba(232,117,70,.18);
+}
+.level-chip{
+  position:absolute;left:calc(100% + 12px);bottom:0;transform:translateY(50%);
+  background:#fff;border-radius:14px;padding:3px 9px;font-size:12px;font-weight:900;color:var(--orange-d);
+  box-shadow:var(--shadow-s);white-space:nowrap;border:2px solid #FFE3D2;
+  transition:bottom .13s cubic-bezier(.3,1.4,.5,1),background .3s,color .3s,border-color .3s;
+}
+.level-chip.full{background:#FFE9A8;border-color:#FFD75E;color:#B98300;}
+
+/* --- 捣棒：加粗的不锈钢长杆 + 大号黑色胶头（参照真实暴打柠檬茶工具）
+       外层 .pestle-wrap 负责「常态轻轻摆动」，内层 .pestle 由 JS 控制捶打轨迹
+       （每下都带一点横向偏移和倾斜，不是死板的垂直往复） --- */
+.pestle-wrap{
+  position:absolute;left:50%;top:-96px;width:54px;height:200px;margin-left:-27px;
+  transform-origin:50% 92%;z-index:6;pointer-events:none;
+  filter:drop-shadow(0 9px 13px rgba(90,90,100,.34));
+  animation:pestleIdle 2.9s ease-in-out infinite;
+}
+@keyframes pestleIdle{0%,100%{transform:rotate(-1.8deg)}50%{transform:rotate(1.8deg)}}
+.pestle{
+  position:absolute;inset:0;transform-origin:50% 92%;
+  transition:transform .075s cubic-bezier(.25,.8,.45,1);
+}
+.pestle .stick{
+  position:absolute;left:50%;top:-16px;width:23px;height:158px;margin-left:-11.5px;
+  border-radius:11px;
+  background:linear-gradient(90deg,#5F676F,#F4F7FA 24%,#C3CAD1 44%,#EDF1F4 61%,#788088 85%,#9AA2AA);
+  box-shadow:0 4px 11px rgba(80,85,95,.3);
+}
+.pestle .stick::after{                       /* 金属高光 */
+  content:"";position:absolute;left:4px;top:7px;bottom:7px;width:3.4px;border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.25));
+}
+.pestle .stick::before{                      /* 杆顶抛光圆头 */
+  content:"";position:absolute;left:0;right:0;top:-9px;height:18px;border-radius:50%;
+  background:linear-gradient(180deg,#F2F5F8,#A8B0B8);
+}
+.pestle .head{                               /* 大号黑色橡胶/ABS 捣头 */
+  position:absolute;left:0;bottom:0;width:54px;height:86px;
+  border-radius:27px 27px 20px 20px/36px 36px 30px 30px;
+  background:linear-gradient(100deg,#15171A,#4E535B 33%,#2B2E34 61%,#101215 92%);
+  box-shadow:
+    inset -6px 0 10px rgba(0,0,0,.6),
+    inset 6px 0 9px rgba(255,255,255,.15),
+    inset 0 -8px 13px rgba(0,0,0,.55),
+    0 10px 19px rgba(60,60,70,.34);
+}
+.pestle .head::before{                       /* 杆与胶头的金属箍 */
+  content:"";position:absolute;left:6px;right:6px;top:7px;height:13px;border-radius:50%;
+  background:linear-gradient(180deg,#D8DDE2,#8B939B);
+  box-shadow:inset 0 -2px 3px rgba(70,75,82,.6);
+}
+.pestle .head::after{                        /* 胶头底部的磨砂圆弧 */
+  content:"";position:absolute;left:7px;right:7px;bottom:5px;height:24px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.11),rgba(255,255,255,0));
+}
+.pestle .soak{                               /* 泡在茶汤里的部分：叠一层果汁色（screen 提亮黑色胶头） */
+  position:absolute;left:4px;right:4px;bottom:4px;height:52px;
+  border-radius:25px 25px 19px 19px/33px 33px 28px 28px;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,var(--jw,#D98C3F) 46%,var(--jw,#D98C3F) 100%);
+  opacity:0;mix-blend-mode:screen;
+  pointer-events:none;transition:opacity .35s;
+}
+.pestle.wet .soak{opacity:.5;}
+
+/* --- 提示条 --- */
+.smash-hint{
+  flex:0 0 auto;margin-top:6px;border-radius:24px;padding:14px;text-align:center;
+  background:linear-gradient(180deg,#FFD98A,#FFB65C);color:#7A4A12;
+  font-size:15.5px;font-weight:900;cursor:pointer;
+  box-shadow:0 7px 0 #E89B3C,0 12px 22px rgba(232,155,60,.3);
+  animation:pulse 1.5s ease-in-out infinite;transition:transform .08s,opacity .3s;
+}
+.smash-hint small{display:block;font-size:11px;font-weight:700;opacity:.75;margin-top:3px;}
+.smash-hint:active{transform:translateY(5px);box-shadow:0 2px 0 #E89B3C;}
+@keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.07)}}
+.smash-hint.off{opacity:.4;pointer-events:none;animation:none;}
+.tip{text-align:center;font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:9px;height:16px;}
+
+/* --- 掉落层 / 特效层 --- */
+#pourFx{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden;}
+.drop-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3;}
+/* 倒茶的水流：从量杯尖嘴落到液面（高度由 JS 跟液面走） */
+.tea-stream{
+  position:absolute;width:9px;border-radius:5px;z-index:6;pointer-events:none;
+  transform-origin:top center;
+  background:linear-gradient(180deg,rgba(201,127,53,.15),rgba(201,127,53,.85) 24%,rgba(186,114,42,.98));
+  box-shadow:0 0 7px rgba(201,127,53,.28);
+  transition:height 1.5s cubic-bezier(.35,.35,.5,.95),opacity .28s;
+  opacity:0;
+}
+.tea-stream.on{opacity:1;}
+/* --- 小量杯：倾斜着把茶汤倒进杯里 --- */
+.tea-jug{
+  position:absolute;width:54px;height:78px;z-index:7;pointer-events:none;
+  transform-origin:76% 88%;
+  animation:jugPour 2.6s cubic-bezier(.4,.12,.5,.92) forwards;
+}
+@keyframes jugPour{
+  0%{opacity:0;transform:translate(36px,-54px) rotate(7deg)}
+  13%{opacity:1;transform:translate(0,0) rotate(4deg)}
+  27%{transform:translate(0,0) rotate(-41deg)}
+  73%{transform:translate(0,0) rotate(-41deg)}
+  88%{opacity:1;transform:translate(9px,-28px) rotate(-7deg)}
+  100%{opacity:0;transform:translate(38px,-60px) rotate(6deg)}
+}
+.tea-jug .tj-glass{
+  position:absolute;inset:0;overflow:hidden;
+  clip-path:polygon(2% 0%,98% 0%,86% 100%,14% 100%);
+  background:linear-gradient(100deg,rgba(255,255,255,.94),rgba(212,231,242,.58) 46%,rgba(255,255,255,.9));
+  box-shadow:inset 0 0 0 2.5px rgba(255,255,255,.92);
+}
+.tea-jug .tj-liq{
+  position:absolute;left:0;right:0;bottom:0;height:84%;
+  background:linear-gradient(180deg,#DC9C42,#B36D22);
+  transition:height 1.4s cubic-bezier(.35,.35,.5,.95);
+}
+.tea-jug .tj-marks{
+  position:absolute;left:24%;right:24%;top:22%;height:60%;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.tea-jug .tj-marks i{display:block;height:1.4px;border-radius:2px;background:rgba(255,255,255,.85);}
+.tea-jug .tj-spout{                          /* 左侧尖嘴 */
+  position:absolute;left:-9px;top:1px;width:17px;height:12px;
+  border-radius:60% 22% 38% 60%;
+  background:linear-gradient(120deg,rgba(255,255,255,.96),rgba(212,231,242,.7));
+  box-shadow:inset 0 0 0 1.8px rgba(255,255,255,.92);
+}
+.tea-jug .tj-handle{                         /* 右侧把手 */
+  position:absolute;right:-12px;top:14px;width:18px;height:36px;
+  border:5px solid rgba(255,255,255,.95);border-left:none;border-radius:0 15px 15px 0;
+  box-shadow:2px 0 6px rgba(170,195,210,.42);
+}
+.float-txt{
+  position:absolute;font-size:13px;font-weight:900;color:var(--orange-d);
+  pointer-events:none;text-shadow:0 2px 0 #fff;animation:floatUp .72s ease-out forwards;z-index:8;
+}
+@keyframes floatUp{from{transform:translate(-50%,0) scale(.7);opacity:0}30%{transform:translate(-50%,-16px) scale(1.1);opacity:1}to{transform:translate(-50%,-52px) scale(1);opacity:0}}
+.drop{position:absolute;border-radius:50%;pointer-events:none;z-index:7;animation:dropFly .6s ease-out forwards;}
+@keyframes dropFly{
+  from{transform:translate(-50%,-50%) translate(0,0) scale(1);opacity:1}
+  to{transform:translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(.3);opacity:0}
+}
+.sparkle{position:absolute;font-size:20px;animation:spk .95s ease-out forwards;}
+@keyframes spk{from{transform:scale(0) rotate(0);opacity:0}30%{transform:scale(1.2) rotate(30deg);opacity:1}to{transform:scale(.6) translateY(-44px) rotate(90deg);opacity:0}}
+
+/* ========== 第三屏：成品 ========== */
+.result-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:6px;}
+.glass-scene{
+  position:relative;height:212px;display:flex;align-items:flex-end;justify-content:center;
+}
+.glass{position:relative;width:132px;height:178px;animation:glassIn .55s cubic-bezier(.2,1.3,.4,1);}
+@keyframes glassIn{from{transform:translateY(70px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+.glass-body{
+  position:absolute;inset:0;overflow:hidden;border-radius:10px 10px 26px 26px/10px 10px 20px 20px;
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(228,240,246,.5));
+  border:3px solid rgba(255,255,255,.98);
+  box-shadow:inset 0 -12px 22px rgba(160,130,110,.12),inset 5px 0 12px rgba(255,255,255,.9),0 14px 26px rgba(180,145,120,.22);
+}
+.glass-body::after{
+  content:"";position:absolute;top:24px;left:12px;width:11px;height:78px;border-radius:9px;
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0));z-index:5;
+}
+.glass-rim{
+  position:absolute;top:-3px;left:-5px;right:-5px;height:16px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.98);
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(230,242,248,.2));z-index:4;
+}
+.glass-liquid{position:absolute;left:0;right:0;bottom:0;top:24px;}
+.glass-liquid .liquid{transition:height .95s cubic-bezier(.35,.9,.4,1),background .4s;}
+.glass-bit{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .6s;
+  animation:gbit 3.4s ease-in-out infinite;
+}
+.glass-bit.in{opacity:.94;}
+@keyframes gbit{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.straw{
+  position:absolute;left:78px;bottom:70px;width:15px;height:128px;
+  border-radius:9px 9px 3px 3px;transform-origin:bottom center;
+  transform:rotate(15deg) translateY(-118px);opacity:0;
+  background:repeating-linear-gradient(48deg,#FF8FA3 0 9px,#FFFFFF 9px 18px);
+  box-shadow:inset -3px 0 5px rgba(0,0,0,.12),0 3px 8px rgba(0,0,0,.08);
+  border:2px solid rgba(255,255,255,.9);
+  transition:transform .55s cubic-bezier(.2,1.5,.4,1),opacity .3s;z-index:6;
+}
+.straw.in{transform:rotate(15deg) translateY(0);opacity:1;}
+.slice{
+  position:absolute;left:-20px;bottom:104px;width:48px;height:48px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg,transparent 0 24deg,rgba(255,255,255,.9) 24deg 27deg),
+    radial-gradient(circle at 50% 50%,var(--sp,#FFF3A8) 0 70%,var(--sc,#F5E050) 71% 100%);
+  border:4px solid var(--sc,#F5E050);
+  box-shadow:0 4px 10px rgba(0,0,0,.12),inset 0 0 3px rgba(255,255,255,.9);
+  transform:rotate(-14deg) scale(0);opacity:0;
+  transition:transform .45s cubic-bezier(.2,1.6,.4,1) .3s,opacity .3s .3s;z-index:7;
+}
+.slice.in{transform:rotate(-14deg) scale(1);opacity:1;}
+
+.result-card{
+  background:#fff;border-radius:30px;padding:20px 18px 18px;margin-top:10px;
+  box-shadow:0 16px 36px rgba(180,145,120,.2);border:2.5px solid #fff;
+  animation:cardUp .5s cubic-bezier(.2,1.2,.4,1);
+}
+@keyframes cardUp{from{transform:translateY(30px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.res-title{text-align:center;}
+.res-title .nm{font-size:23px;font-weight:900;letter-spacing:1px;}
+.res-title .sub{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-top:5px;}
+.rank-badge{
+  display:inline-flex;align-items:center;gap:5px;margin-top:11px;padding:5px 14px;border-radius:20px;
+  font-size:13px;font-weight:900;color:#8A5A12;background:linear-gradient(180deg,#FFE9A4,#FFD35F);
+  box-shadow:0 4px 10px rgba(230,180,60,.35);
+  animation:badgeIn .5s cubic-bezier(.2,1.7,.4,1) .15s backwards;
+}
+@keyframes badgeIn{from{transform:scale(.4) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.stat{background:#FFF9F3;border-radius:16px;padding:9px 4px;text-align:center;border:2px solid #FFEFE1;}
+.stat .v{font-size:17px;font-weight:900;color:var(--orange-d);}
+.stat .v small{font-size:9.5px;font-weight:700;color:#C0A995;}
+.stat .k{font-size:10.5px;color:var(--ink-soft);font-weight:700;margin-top:2px;}
+.flavor{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.fpill{font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:20px;background:#FFF1F4;color:#D2647C;}
+.fpill.mint{background:#EDFAF3;color:#3E9E78;}
+.fpill.lemon{background:#FFF9E0;color:#B89000;}
+.footer-tip{text-align:center;font-size:11px;color:#CBB8AA;font-weight:700;padding:12px 0 2px;}
+</style>
+</head>
+<body data-page-node-id="Eds7mJnT8ADdGFV8Gtws2O">
+<div id="app" data-page-node-id="Bl7gac1yJPq0tA91e3qOPr">
+  <div class="blob" style="width:150px;height:150px;background:#FFE7C9;top:-40px;left:-50px;" data-page-node-id="WaLyR3ssRXQFziMiK8jNw7"></div>
+  <div class="blob" style="width:110px;height:110px;background:#E3F6EC;bottom:8%;right:-40px;animation-delay:-3s;" data-page-node-id="bIu7w3M00ruzlMlai7F9uh"></div>
+  <div class="blob" style="width:80px;height:80px;background:#FFE1E8;top:34%;left:-34px;animation-delay:-5s;" data-page-node-id="2ijHWw0k741D1eoJwGl5ER"></div>
+
+  <div class="topbar" data-page-node-id="JMvlD5eIIfdqFXaSD6qpg0">
+    <div class="brand" data-page-node-id="q7hsGmaQ3Wk4wjNMtF5tax"><h1 data-page-node-id="AnGCBglEznVv7pgUdFI246">暴打鲜果茶</h1><span class="tag" data-page-node-id="c71Aek9B1Kz6SfBVx3HLkJ">解压小游戏</span></div>
+    <div class="top-actions" data-page-node-id="dkhS13cnkMLMd8hRbFCzgr">
+      <div class="icon-btn hidden" id="backBtn" title="重选水果" data-page-node-id="u8XUDDPoGNwKQeEBXtfuO2">↺</div>
+      <div class="icon-btn" id="soundBtn" title="音效开关" data-page-node-id="uWnC4uP3AOXl4CpbNcSuJU">🔊</div>
+    </div>
+  </div>
+
+  <!-- ============ 第一屏 ============ -->
+  <section class="screen active" id="pickScreen" style="top:56px;" data-page-node-id="DTDZfW9x1sC8kH1BVIjf9i">
+    <div class="pick-body" data-page-node-id="M7gicDcybVN8iHfpAG7RJy">
+      <div class="pick-head" data-page-node-id="Cr4C0aWEvAS02bZBc2Qw4M">
+        <h2 data-page-node-id="LOxhoOT9WHIXhnEWbKVooC">挑几样水果丢进杯里 🧺</h2>
+        <p data-page-node-id="Gux0rHud3sxiFde193Wnho">最多选 4 种，点一下就能加入。还能用 ⊖⊕ 调每种水果的颗数 —— 一杯至少 5 颗，配比不同，果汁颜色和口味都不一样哦。</p>
+      </div>
+      <div class="fruit-grid" id="fruitGrid" data-page-node-id="X2HJOHFXTGW83yCqQFOImW"></div>
+      <div class="basket" data-page-node-id="oBADgfLJELBLqRF9H2Pl0e">
+        <div class="bl" id="basketLabel" data-page-node-id="C7GbltMDtzO5WET8NIaWp0">已选</div>
+        <div class="chips" id="basketChips" data-page-node-id="4HXsn6yNIfVDHmfu7rJza5"><span class="empty" data-page-node-id="tb02FfauYJGYKaviJ1odMW">还没选水果～</span></div>
+      </div>
+      <div class="inspire" data-page-node-id="3dua4HNBxMNfQpKtq1mZQu">
+        <div class="ttl" data-page-node-id="rAEFR5saLc4LGQnebB1lJ4">✨ 没灵感？试试这些搭配</div>
+        <div class="preset-grid" id="presetGrid" data-page-node-id="xEzmKPtLxJistadb4ZxAV8"></div>
+      </div>
+      <div class="tipcard" data-page-node-id="FM0f94An5IRT7cijZX6fXg">
+        Tips：选好水果后用最快手速捶打果肉，倒入茶底后继续捶打直到捣碎，点击越快，果肉碎得越快、出汁越多，一杯至少要捶 100 下，涨到水位线即可完成！
+      </div>
+    </div>
+    <div class="pick-foot" data-page-node-id="tEzpZC2TV65mgxGi146BHv">
+      <button class="btn" id="startBtn" disabled data-page-node-id="GKYOidl2IbVWLR4kO2SmGr">先选一样水果吧</button>
+    </div>
+  </section>
+
+  <!-- ============ 第二屏 ============ -->
+  <section class="screen" id="playScreen" style="top:56px;" data-page-node-id="nqg45mOBp0BkswIU9m8Umg">
+    <div class="play-top" data-page-node-id="wI6PiS2zPBGClnpjbnGuAT">
+      <div class="meter" data-page-node-id="FJFXkzwnt47DtYvsooezqP"><span class="k" data-page-node-id="Ui70SYMUFCnsEr7NCe28Mc">手速</span><span class="v" id="cpsVal" data-page-node-id="JOr1UoWp6J9gfwUOPjnjMN">0.0<small data-page-node-id="Hqga2kkUpIR9xOBkIPldWu">次/秒</small></span></div>
+      <div class="meter" data-page-node-id="ABuRi01XpJSWKkwSA57hiM"><span class="k" data-page-node-id="f5hM94vqdPI94xD8DdeS4H">粉碎度</span><span class="v g" id="smashVal" data-page-node-id="XXWpPy20HjVWeeSjM3ZlzL">0%</span></div>
+    </div>
+    <div class="cup-wrap" id="cupWrap" data-page-node-id="xndB0EhFCnOeEDF42Fxhxm">
+      <div id="hitzone" data-page-node-id="BShPEg70EA5Wte1FxBVxFq">
+        <div class="cup" id="cup" data-page-node-id="JtrIe1zNOGhL9a3EHpcOoF">
+          <div class="cup-body" id="cupBody" data-page-node-id="xMMK2rlLPjtDNlub6FcwsJ">
+            <div class="liquid-box" id="liquidBox" data-page-node-id="3EBriTF86yoYJNz3qgtisO">
+              <div class="fruits-layer" id="fruitsLayer" data-page-node-id="p551t68WjgEBOHJLc0hh3J"></div>
+              <div id="innerFx"></div>
+              <div class="liquid" id="liquid" data-page-node-id="KowLYOjeNDdFr2SLR5UHHZ">
+                <div class="foam" data-page-node-id="cHqAwRrd53YDfhtYfITqZJ"></div>
+                <div class="wave w2" data-page-node-id="09HlJRpaHlmmG2dk3bshNn"><svg viewBox="0 0 200 20" preserveAspectRatio="none" data-page-node-id="UVawUzYB7BmkB2dDEsVvoe"><path d="M0 10 Q 25 2 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z" data-page-node-id="Tz3LPrHx3iDSydBw2cjFoc"/></svg></div>
+                <div class="wave w1" data-page-node-id="jxAmeFSjEsiDZxvoDrBvDp"><svg viewBox="0 0 200 20" preserveAspectRatio="none" data-page-node-id="JXv0L1iO1RQPBQFaZxl7gA"><path d="M0 10 Q 25 2 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z" data-page-node-id="wKZGXm3stFCBtGPxjMo2gB"/></svg></div>
+              </div>
+              <div class="ripple" id="ripple" data-page-node-id="teaYtxAfHzVTC3oszO4oEq"></div>
+              <div class="waterline" data-page-node-id="eaEKngJRcRcTOKlqCGorgP"></div>
+            </div>
+          </div>
+          <div class="cup-rim" data-page-node-id="u8ARdVLhTXgdoOuzEcGL5a"></div>
+          <div class="cup-lid" data-page-node-id="lid0000000000000000001"></div>
+          <div class="cup-scale" data-page-node-id="scale00000000000000001"><i>MAX 500ml</i><i>400</i><i>300</i><i>200</i><i>100</i><i>MIN</i></div>
+          <div class="wl-label" data-page-node-id="FNjAyaNJwqK43TxOV2yS83">水位线</div>
+          <div class="level-chip" id="levelChip" data-page-node-id="PZ6ZlnCEMUDcIhtGakmzl6">0%</div>
+          <div class="pestle-wrap" id="pestleWrap" data-page-node-id="pwrap000000000000001"><div class="pestle" id="pestle" data-page-node-id="7GhwCMZWSETseNNTUuEeru"><div class="stick" data-page-node-id="2QA9aQrn6AcGANC3dBwdJ9"></div><div class="head" data-page-node-id="Af89iw7IErixOtwnnPtGnC"><div class="soak" data-page-node-id="s0ak0000000000000000001"></div></div></div></div>
+        </div>
+        <div class="drop-layer" id="dropLayer" data-page-node-id="UM7er9EEgF009BBJHxgRq9"></div>
+      </div>
+    </div>
+    <div class="smash-hint" id="smashHint" data-page-node-id="TwdkPxxouXrEiNzNTwFA0k">快速点击，暴打出汁！<small data-page-node-id="WEaTducqG3xbOEtX1Y5d4X">点得越快，汁水越多 · 手速就是战斗力</small></div>
+    <div class="tip" id="playTip" data-page-node-id="q7Ogsxv8By15qzAd2FKyWe"></div>
+  </section>
+
+  <!-- ============ 第三屏 ============ -->
+  <section class="screen" id="resultScreen" style="top:56px;" data-page-node-id="Uw9yz84XG0Wm3bXYa8GfKL">
+    <div class="result-scroll" data-page-node-id="oNO73pOvVbIIieeWUhEQNk">
+      <div class="glass-scene" data-page-node-id="L1vcsEm2d68fNBswCDDcfK">
+        <div class="glass" id="glass" data-page-node-id="D1wf9sCDNHaT1MslUGwqy6">
+          <div class="glass-body" data-page-node-id="c0FhATt67JPXkFIUb9lu4Y">
+            <div class="glass-liquid" id="glassLiquid" data-page-node-id="LWsuSXeWnOOedJ6a9UxVpA"></div>
+          </div>
+          <div class="glass-rim" data-page-node-id="EWzJ3acYFLQx1f0Sogr1dR"></div>
+          <div class="straw" id="straw" data-page-node-id="3PMAlLAKDFst9Ub4wLVFST"></div>
+          <div class="slice" id="slice" data-page-node-id="dtNqdceZsjNf9gGgXKJtms"></div>
+        </div>
+      </div>
+      <div class="result-card" data-page-node-id="5rPykZukPUpGzQ8tv62fHL">
+        <div class="res-title" data-page-node-id="UCucfnYDuoTqa0MjYhtHvt">
+          <div class="nm" id="resName" data-page-node-id="8fsowX3z0V648XNZKElW6K">一杯果汁</div>
+          <div class="sub" id="resSub" data-page-node-id="PQaXpPBmOy3eePL91eREZQ">暴打完成！</div>
+          <div data-page-node-id="HzRo9e7dz9iGrvnE03nacU"><span class="rank-badge" id="resRank" data-page-node-id="eTtnLUXkD3SODxci133yn9">🌱 温柔派</span></div>
+        </div>
+        <div class="stats" data-page-node-id="e8dV98osHAIhn1FZICOECO">
+          <div class="stat" data-page-node-id="US21BAZoMeK60DAHxDsSYQ"><div class="v" id="stHits" data-page-node-id="nIfyWAUKFetAJAq3moG4qg">0<small data-page-node-id="4rfQUM4E19TLE92LFUOPoT"> 下</small></div><div class="k" data-page-node-id="70Hz8hc5QdqbF3gtrqaTCi">总击打</div></div>
+          <div class="stat" data-page-node-id="YdhqNY9JglGJ8wEcap77Pf"><div class="v" id="stCps" data-page-node-id="BOLRDvnRusYj1GMYYuRR6I">0.0<small data-page-node-id="9iZ0PNxYkXRnHyt70IqkSa"> 次/秒</small></div><div class="k" data-page-node-id="KRBBEhE8DYlogVhEwcECna">峰值手速</div></div>
+          <div class="stat" data-page-node-id="mZ9fevc9Ma9wpjtHRfwJTY"><div class="v" id="stTime" data-page-node-id="OH4EHc4dRWAZK4SxhZ1kxs">0<small data-page-node-id="QCCeH5AR16EGCIvjW3C6BG"> 秒</small></div><div class="k" data-page-node-id="j6OgvZQ6Jo2iLM0iEeexYt">用时</div></div>
+        </div>
+        <div class="flavor" id="flavor" data-page-node-id="Vmf7pw0Ujgb0MUSwycMy4b"></div>
+      </div>
+      <div class="btn-row" data-page-node-id="xtA9vnxQDqDOvYzv1Cq2q0">
+        <button class="btn small" id="againBtn" data-page-node-id="0u6qc22BAgwFO0hffQwThZ">再打一杯 🥤</button>
+        <button class="btn small ghost" id="repickBtn" data-page-node-id="BnQ43h76G6djBpweCj7fha">换个配方</button>
+      </div>
+      <div class="footer-tip" data-page-node-id="LUGWmWQ88eD10hoSwAKcJf">🎉 恭喜你完成一杯暴打鲜果茶！大口畅饮吧</div>
+    </div>
+  </section>
+
+  <div id="pourFx" data-page-node-id="urq2Qz33KT0KUAC9Zl5G7L"></div>
+</div>
+
+<script>
+/* =====================================================================
+   暴打鲜果茶 · 解压小游戏
+   单文件 · 无外部依赖 · 音效由 Web Audio 实时合成
+   ===================================================================== */
+
+/* ---------- emoji 里没有的水果，手绘一个（可爱扁平风） ---------- */
+const SVG_POMELO =
+`<svg viewBox="0 0 100 100"><defs><radialGradient id="pom-g" cx="36%" cy="30%" r="80%">
+<stop offset="0" stop-color="#FBEFA9"/><stop offset="55%" stop-color="#F0D76B"/><stop offset="1" stop-color="#D9B63F"/>
+</radialGradient></defs>
+<ellipse cx="50" cy="58" rx="40" ry="37" fill="url(#pom-g)"/>
+<path d="M50 22c2-9 9-14 17-14-1 9-7 15-16 16z" fill="#7DC55C"/>
+<path d="M50 22c-3-7-8-11-15-12 1 8 6 13 14 14z" fill="#96D474"/>
+<ellipse cx="50" cy="24" rx="9" ry="5" fill="#E4C455"/>
+<ellipse cx="34" cy="44" rx="13" ry="8" transform="rotate(-28 34 44)" fill="#FFFAE0" opacity=".5"/>
+<circle cx="62" cy="76" r="3" fill="#C9A83A" opacity=".45"/>
+<circle cx="40" cy="78" r="2.4" fill="#C9A83A" opacity=".4"/>
+<circle cx="70" cy="58" r="2" fill="#C9A83A" opacity=".35"/></svg>`;
+
+/* 芭乐（番石榴）：黄绿表皮 + 凹凸斑块 + 深色小点 + 顶部宿存萼片 */
+const SVG_GUAVA =
+`<svg viewBox="0 0 100 100"><defs>
+<radialGradient id="gua-g" cx="33%" cy="25%" r="86%">
+<stop offset="0" stop-color="#F2F8BC"/><stop offset="48%" stop-color="#CDE173"/><stop offset="1" stop-color="#9AB93C"/>
+</radialGradient>
+<clipPath id="gua-c"><ellipse cx="50" cy="56" rx="33" ry="34.5"/></clipPath>
+</defs>
+<ellipse cx="50" cy="56" rx="33" ry="34.5" fill="url(#gua-g)"/>
+<g clip-path="url(#gua-c)">
+<ellipse cx="29" cy="43" rx="11" ry="8" transform="rotate(-24 29 43)" fill="#DEEE96" opacity=".55"/>
+<ellipse cx="69" cy="41" rx="9" ry="6.5" transform="rotate(18 69 41)" fill="#AECA50" opacity=".45"/>
+<ellipse cx="72" cy="67" rx="10" ry="7" transform="rotate(-14 72 67)" fill="#E4F2A0" opacity=".5"/>
+<ellipse cx="34" cy="73" rx="12" ry="8" transform="rotate(12 34 73)" fill="#AEC94E" opacity=".4"/>
+</g>
+<g fill="#8BA836" opacity=".45">
+<circle cx="38" cy="37" r="1.9"/><circle cx="58" cy="34" r="1.5"/><circle cx="71" cy="53" r="1.7"/>
+<circle cx="47" cy="63" r="1.6"/><circle cx="30" cy="59" r="1.4"/><circle cx="63" cy="75" r="1.5"/>
+<circle cx="43" cy="81" r="1.4"/></g>
+<path d="M50 23c1.5-7 6-11 12-12-1.5 7-5.5 11.5-12 12.5z" fill="#7DC55C"/>
+<path d="M50 23c-1.5-6-5.5-10-11-11 1.5 6.5 5 10.5 11 11.5z" fill="#95D472"/>
+<ellipse cx="50" cy="23" rx="8" ry="4.2" fill="#A9CE5F"/>
+<ellipse cx="36" cy="47" rx="10" ry="6" transform="rotate(-30 36 47)" fill="#FFFFE8" opacity=".42"/></svg>`;
+
+/* 火龙果：长椭圆玫红果身 + 七片向外翘起、尖端下垂的绿叶状苞片（不是放射状尖刺） */
+const SVG_DRAGON =
+`<svg viewBox="0 0 100 100"><defs>
+<radialGradient id="dra-g" cx="34%" cy="26%" r="86%">
+<stop offset="0" stop-color="#FF7FB0"/><stop offset="52%" stop-color="#E8397A"/><stop offset="1" stop-color="#AE1C55"/>
+</radialGradient>
+<clipPath id="dra-c"><ellipse cx="50" cy="55" rx="27" ry="36"/></clipPath>
+</defs>
+<ellipse cx="50" cy="55" rx="27" ry="36" fill="url(#dra-g)"/>
+<g clip-path="url(#dra-c)">
+<ellipse cx="40" cy="37" rx="8" ry="11" transform="rotate(-14 40 37)" fill="#FF9CC0" opacity=".45"/>
+<ellipse cx="61" cy="71" rx="9" ry="12" transform="rotate(12 61 71)" fill="#C42463" opacity=".45"/>
+</g>
+<g fill="#7CC24E" stroke="#5FA53A" stroke-width="1" stroke-linejoin="round">
+<path d="M50 17c2-8 8-13 15-14-1 8-6 14-13 16z"/>
+<path d="M28 31c-7-5-11-12-12-20 8 3 14 9 16 17z"/>
+<path d="M72 31c7-5 11-12 12-20-8 3-14 9-16 17z"/>
+<path d="M23 57c-8 0-15-3-20-9 8-2 16-1 21 4z"/>
+<path d="M77 57c8 0 15-3 20-9-8-2-16-1-21 4z"/>
+<path d="M29 79c-7 4-15 5-22 2 5-5 13-7 20-6z"/>
+<path d="M71 79c7 4 15 5 22 2-5-5-13-7-20-6z"/>
+</g>
+<g fill="#A8DC74" opacity=".85">
+<path d="M51 18c1.5-5 5-9 10-11-2 5-5 8-9 10z"/>
+<path d="M31 32c-5-3-8-8-9-13 5 3 9 7 11 12z"/>
+<path d="M69 32c5-3 8-8 9-13-5 3-9 7-11 12z"/>
+</g>
+<path d="M50 19c0-5 2-9 6-11-1 5-2 9-5 11z" fill="#6BAF44"/>
+<ellipse cx="39" cy="43" rx="6" ry="12" transform="rotate(-16 39 43)" fill="#FFD4E4" opacity=".38"/></svg>`;
+
+/* 荔枝：玫红圆果 + 龟裂纹鳞斑 + 短梗 */
+const SVG_LYCHEE =
+`<svg viewBox="0 0 100 100"><defs>
+<radialGradient id="lyc-g" cx="33%" cy="25%" r="86%">
+<stop offset="0" stop-color="#FF9BA6"/><stop offset="48%" stop-color="#EE5C6E"/><stop offset="1" stop-color="#BE2A42"/>
+</radialGradient>
+<clipPath id="lyc-c"><ellipse cx="50" cy="57" rx="32" ry="31"/></clipPath>
+</defs>
+<ellipse cx="50" cy="57" rx="32" ry="31" fill="url(#lyc-g)"/>
+<g clip-path="url(#lyc-c)" stroke="#CE3B54" stroke-width="1.3" opacity=".5" fill="none">
+<path d="M20 45h60M19 57h62M23 69h54M30 35h42"/>
+<path d="M36 28v60M50 26v64M64 28v60"/>
+</g>
+<g clip-path="url(#lyc-c)" fill="#FFBCC3" opacity=".5">
+<circle cx="38" cy="43" r="2.7"/><circle cx="56" cy="39" r="2.2"/><circle cx="46" cy="53" r="2.9"/>
+<circle cx="67" cy="49" r="2.3"/><circle cx="32" cy="61" r="2.4"/><circle cx="58" cy="65" r="2.6"/>
+<circle cx="44" cy="73" r="2.2"/><circle cx="71" cy="63" r="2"/></g>
+<path d="M50 27c-.5-6 1-10 4-13" stroke="#8B6A46" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<ellipse cx="36" cy="43" rx="9" ry="6" transform="rotate(-30 36 43)" fill="#FFF0F2" opacity=".36"/></svg>`;
+
+/* size = 这颗水果在杯里的「视觉直径」，用于区分个头大小 */
+const FRUITS = [
+  {id:'lemon',      name:'柠檬',   emoji:'🍋', size:52, color:'#F2E24E', pulp:'#FFF3A8', tint:0.9,  sweet:0, sour:3},
+  {id:'strawberry', name:'草莓',   emoji:'🍓', size:46, color:'#E8455F', pulp:'#F8A6B2', tint:1.2,  sweet:2, sour:1},
+  {id:'mango',      name:'芒果',   emoji:'🥭', size:60, color:'#FFAE23', pulp:'#FFD27A', tint:1.1,  sweet:3, sour:0},
+  {id:'orange',     name:'橙子',   emoji:'🍊', size:60, color:'#FF9B22', pulp:'#FFC46B', tint:1.1,  sweet:2, sour:1},
+  {id:'watermelon', name:'西瓜',   emoji:'🍉', size:76, color:'#EF4B5E', pulp:'#F98C97', tint:1.1,  sweet:3, sour:0},
+  {id:'grape',      name:'葡萄',   emoji:'🍇', size:48, color:'#7B4FA8', pulp:'#B08BD0', tint:1.4,  sweet:2, sour:1},
+  {id:'blueberry',  name:'蓝莓',   emoji:'🫐', size:34, color:'#5B4B9E', pulp:'#9B8FD0', tint:1.7,  sweet:1, sour:1},
+  {id:'peach',      name:'水蜜桃', emoji:'🍑', size:58, color:'#FFB09E', pulp:'#FFD6CB', tint:0.9,  sweet:3, sour:0},
+  {id:'kiwi',       name:'奇异果', emoji:'🥝', size:50, color:'#8FD14F', pulp:'#C3E89A', tint:0.9,  sweet:1, sour:2},
+  {id:'pineapple',  name:'菠萝',   emoji:'🍍', size:70, color:'#FFD033', pulp:'#FFE58A', tint:1.0,  sweet:2, sour:2},
+  {id:'melon',      name:'蜜瓜',   emoji:'🍈', size:66, color:'#B9DD6A', pulp:'#E3F3B8', tint:0.8,  sweet:3, sour:0},
+  {id:'cherry',     name:'樱桃',   emoji:'🍒', size:40, color:'#B0132E', pulp:'#E86A7E', tint:1.4,  sweet:2, sour:1},
+  {id:'pomelo',     name:'柚子',   svg:SVG_POMELO,  size:74, color:'#F0D062', pulp:'#FBEBA9', tint:0.85, sweet:1, sour:2},
+  {id:'guava',      name:'芭乐',   svg:SVG_GUAVA,   size:56, color:'#F49AB8', pulp:'#FFD3DF', tint:0.95, sweet:2, sour:1},
+  {id:'pear',       name:'梨',     emoji:'🍐', size:62, color:'#EDE49E', pulp:'#F7F0C8', tint:0.7,  sweet:2, sour:0},
+  {id:'apple',      name:'苹果',   emoji:'🍎', size:60, color:'#E9A952', pulp:'#FFDFA6', tint:0.9,  sweet:2, sour:1},
+  {id:'dragon',     name:'火龙果', svg:SVG_DRAGON,  size:64, color:'#E85B96', pulp:'#FFC4DA', tint:1.6,  sweet:1, sour:0},
+  {id:'coconut',    name:'椰子',   emoji:'🥥', size:70, color:'#EDE3C8', pulp:'#FFFDF2', tint:0.55, sweet:2, sour:0},
+  {id:'banana',     name:'香蕉',   emoji:'🍌', size:66, color:'#F5DE8A', pulp:'#FFF4C8', tint:0.7,  sweet:3, sour:0},
+  {id:'lychee',     name:'荔枝',   svg:SVG_LYCHEE,  size:44, color:'#F7B4BB', pulp:'#FFF0F1', tint:0.95, sweet:3, sour:0},
+];
+const PRESETS = [
+  {name:'经典暴打柠檬', desc:'酸爽解腻',   ids:['lemon']},
+  {name:'夏日莓莓',     desc:'花青素满满', ids:['strawberry','blueberry']},
+  {name:'芭乐柚子冰',   desc:'台味清新',   ids:['guava','pomelo']},
+  {name:'雪梨苹果露',   desc:'温润清甜',   ids:['pear','apple']},
+  {name:'热带风暴',     desc:'一口到海岛', ids:['mango','pineapple','orange']},
+  {name:'蜜桃西瓜冰',   desc:'甜甜少女心', ids:['peach','watermelon']},
+];
+const MAX_PICK = 4;
+const WATER_LINE = 100;
+/* 份数（颗数）规则：一杯至少 5 颗水果，整杯最多 10 颗 */
+const MIN_TOTAL = 5, MAX_TOTAL = 10, MAX_PER = 6;
+/* 满杯所需的总击数：任何手速都不会少于 100 下 */
+const TOTAL_HITS = 100;
+/* 前 TEA_AT 下是「干捶」—— 水果还没茶汤，纯靠砸；碎够了才倒茶 */
+const TEA_AT = 28;
+/* 干捶阶段每下渗出的一点点果汁（28 下合计约 6%） */
+const DRY_GAIN = 0.214;
+/* 倒茶汤时一次性加上的水位 */
+const TEA_ADD = 24;
+/* 倒茶之后每下出汁：手速拉满（cps=9）也正好 100 下满杯，慢手速约 106 下 */
+const POST_BASE = 0.90, POST_CPS = 0.008;
+/* 茶汤本身的颜色 —— 只用在量杯、茶流和倒茶飞溅上，不参与果汁配色 */
+const TEA_COLOR = '#C97F35';
+
+/* 杯内区域真实像素（.liquid-box = 200 × 204） */
+const CUP_W = 200, CUP_H = 204;
+/* 同屏果肉碎块上限（再多就靠碎渣化汁腾名额） */
+const MAX_BITS = 66;
+
+const S = {picked:[], counts:{}, liquid:0, smash:0, hits:0, t0:0, hitTimes:[], cps:0, peakCps:0,
+           bits:[], phase:'pick', muted:false, scale:1, gameId:0, cracks:0,
+           teaPoured:false, bodyLife:12, totalFruit:6};
+
+const $ = id => document.getElementById(id);
+const grid=$('fruitGrid'), basketChips=$('basketChips'), basketLabel=$('basketLabel'), startBtn=$('startBtn');
+const pickScreen=$('pickScreen'), playScreen=$('playScreen'), resultScreen=$('resultScreen');
+const liquidEl=$('liquid'), rippleEl=$('ripple'), fruitsLayer=$('fruitsLayer'), dropLayer=$('dropLayer');
+const pestleEl=$('pestle'), cupWrap=$('cupWrap'), cpsVal=$('cpsVal'), smashVal=$('smashVal');
+const levelChip=$('levelChip'), smashHint=$('smashHint'), playTip=$('playTip'), pourFx=$('pourFx');
+const backBtn=$('backBtn'), soundBtn=$('soundBtn');
+
+/* ===================== 音效 ===================== */
+const A = {
+  ctx:null, master:null, noise:null,
+  init(){
+    if(this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain(); this.master.gain.value = 0.85;
+    this.master.connect(this.ctx.destination);
+    const len = Math.floor(this.ctx.sampleRate * 1.2);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
+    this.noise = buf;
+  },
+  resume(){ if(this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+  get on(){ return this.ctx && !S.muted; },
+  nz(dur, type, f0, f1, vol, q){
+    if(!this.on) return;
+    const t = this.ctx.currentTime;
+    const src = this.ctx.createBufferSource(); src.buffer = this.noise;
+    const f = this.ctx.createBiquadFilter(); f.type = type; f.Q.value = q||1;
+    f.frequency.setValueAtTime(f0,t);
+    f.frequency.exponentialRampToValueAtTime(Math.max(60,f1), t+dur);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol, t+Math.min(.012,dur*.15));
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    src.connect(f); f.connect(g); g.connect(this.master);
+    src.start(t); src.stop(t+dur+.02);
+  },
+  tone(type,f0,f1,dur,vol,delay){
+    if(!this.on) return;
+    const t = this.ctx.currentTime + (delay||0);
+    const o = this.ctx.createOscillator(); o.type = type;
+    o.frequency.setValueAtTime(f0,t);
+    if(f1) o.frequency.exponentialRampToValueAtTime(Math.max(30,f1), t+dur);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol, t+.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+dur+.02);
+  },
+  smash(progress){          // 湿漉漉的「噗咚」
+    if(!this.on) return;
+    this.nz(.14,'lowpass',1600+Math.random()*700,320,.32,1);
+    this.tone('sine',120+Math.random()*36,58,.15,.3);
+    if(progress > .1){       // 汁水越多，水声越明显
+      const w = Math.min(progress,1);
+      this.nz(.2,'bandpass',700+Math.random()*500,1400+Math.random()*900,.09+w*.15,3.5);
+    }
+  },
+  plop(){ if(!this.on) return; this.tone('sine',620+Math.random()*180,170,.13,.24); this.nz(.1,'bandpass',1400,600,.13,2.4); },
+  pour(dur){
+    if(!this.on) return;
+    this.nz(dur,'bandpass',900,500,.15,1.6);
+    this.nz(dur*.9,'lowpass',2200,900,.09,.9);
+    for(let i=0;i<5;i++) setTimeout(()=>this.tone('sine',1400-i*90,500,.1,.06), dur*380+i*150);
+  },
+  straw(){ if(!this.on) return; this.tone('triangle',260,900,.14,.18); setTimeout(()=>this.tone('sine',1100,620,.22,.12),90); },
+  /* 完成后：用吸管大口吸吮的声音（保留最初那版音色，一次性、不循环） */
+  slurp(){
+    if(!this.on) return;
+    this.nz(.5,'bandpass',420,1500,.15,2.4);          // 大口上吸
+    this.nz(.46,'lowpass',1300,480,.09,1);
+    for(let i=0;i<4;i++) setTimeout(()=>{ if(this.on) this.tone('sine',880-i*150,260,.09,.07); }, 260+i*105); // 咕嘟咕嘟
+  },
+  done(){
+    if(!this.on) return;
+    [523.25,659.25,783.99,1046.5].forEach((f,i)=>setTimeout(()=>this.tone('sine',f,f*1.002,.42,.12),i*95));
+  },
+  tap(){ if(!this.on) return; this.tone('sine',880+Math.random()*120,1240,.09,.14); }
+};
+
+/* ===================== 果汁配色（减法混色近似） ===================== */
+/* 波浪路径：一个 viewBox 内 4 个周期，配合 200% 宽度正好无缝循环 */
+const WAVE_D = 'M0 10 Q 12.5 -2 25 10 T 50 10 T 75 10 T 100 10 T 125 10 T 150 10 T 175 10 T 200 10 V 20 H 0 Z';
+function normalizeWaves(root){
+  root.querySelectorAll('.wave path').forEach(p=>p.setAttribute('d',WAVE_D));
+}
+
+function hex2rgb(h){ h=h.replace('#','');
+  return [parseInt(h.slice(0,2),16)/255, parseInt(h.slice(2,4),16)/255, parseInt(h.slice(4,6),16)/255]; }
+const clamp01 = v => v<0?0:(v>1?1:v);
+const clamp = (lo,v,hi) => v<lo?lo:(v>hi?hi:v);
+function rgb2hex(r,g,b){ const f=x=>Math.round(clamp01(x)*255).toString(16).padStart(2,'0'); return '#'+f(r)+f(g)+f(b); }
+/* 以 CMY 空间做加权几何平均（模拟真实榨汁的减法混色：红+绿会变褐），
+   再与线性平均融合并提升饱和度，尽量贴近真实混合果汁的颜色。
+   counts 决定每种水果丢了几颗 → 配比直接影响成色（3 颗柠檬 + 1 颗草莓 ≈ 偏柠檬）。 */
+function mixJuice(fruits, counts){
+  if(!fruits.length) return '#F2E24E';
+  if(fruits.length === 1) return fruits[0].color;   // 单果＝该水果真实榨汁色
+  const ws = fruits.map(f=> (f.tint||1) * (counts ? (counts[f.id]||1) : 1));
+  const sw = ws.reduce((a,b)=>a+b,0);
+  let sub=[1,1,1], lin=[0,0,0];
+  fruits.forEach((f,i)=>{
+    const [r,g,b] = hex2rgb(f.color);
+    const cmy = [1-r,1-g,1-b].map(v=>Math.max(0.035,v));
+    const w = ws[i]/sw;
+    sub[0]*=Math.pow(cmy[0],w); sub[1]*=Math.pow(cmy[1],w); sub[2]*=Math.pow(cmy[2],w);
+    lin[0]+=r*w; lin[1]+=g*w; lin[2]+=b*w;
+  });
+  let out=[0,1,2].map(i=> 0.72*(1-sub[i]) + 0.28*lin[i]);
+  const mx=Math.max(...out), mn=Math.min(...out), mid=(mx+mn)/2;
+  out = out.map(v=>clamp01(mid + (v-mid)*1.22));
+  const lum = .299*out[0]+.587*out[1]+.114*out[2];
+  if(lum < .34){ const k=.34/lum; out = out.map(v=>clamp01(v*k)); }
+  return rgb2hex(out[0],out[1],out[2]);
+}
+/* 当前这杯果汁的颜色（含配比权重）—— 这一杯的颜色永远只由水果决定，
+   茶汤只负责把水位抬起来，不参与配色 */
+function juiceColor(){ return mixJuice(S.picked, S.counts); }
+function shade(hex, amt){ const [r,g,b]=hex2rgb(hex);
+  const f = v => amt>0 ? v+(1-v)*amt : v*(1+amt);
+  return rgb2hex(f(r),f(g),f(b)); }
+function rgbaStr(hex,a){ const [r,g,b]=hex2rgb(hex); return `rgba(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)},${a})`; }
+/* 把果汁色刷到任意 .liquid 上。半透明 → 能看见沉在里面的果肉 */
+function paintJuice(liq, juice, alpha){
+  const a = alpha===undefined ? 0.80 : alpha;
+  liq.style.background = `linear-gradient(180deg,${rgbaStr(shade(juice,.12),a*.9)},${rgbaStr(juice,a)} 24%,${rgbaStr(shade(juice,-.18),Math.min(.97,a+.08))})`;
+  liq.style.setProperty('--wave1', rgbaStr(shade(juice,.60),.94));
+  liq.style.setProperty('--wave2', rgbaStr(shade(juice,.34),.84));
+  liq.style.setProperty('--foam', rgbaStr(shade(juice,.80),.88));
+  const fo = liq.querySelector('.foam'); if(fo) fo.style.background = rgbaStr(shade(juice,.80),.88);
+  $('app').style.setProperty('--jw', juice);    // 给「泡在果汁里的杵头」用
+}
+
+/* ===================== 水果图标 ===================== */
+function iconHTML(f, size){
+  return f.svg
+    ? `<span class="fic" style="width:${size}px;height:${size}px">${f.svg}</span>`
+    : `<span class="fic em" style="width:${size}px;height:${size}px;font-size:${(size*0.96).toFixed(1)}px">${f.emoji}</span>`;
+}
+
+/* ===================== 第一屏 ===================== */
+function buildGrid(){
+  grid.innerHTML='';
+  FRUITS.forEach(f=>{
+    const el=document.createElement('div');
+    el.className='fruit-chip';
+    el.dataset.id=f.id;
+    el.style.setProperty('--c',f.color);
+    el.style.setProperty('--cg',rgbaStr(f.color,.45));
+    el.innerHTML=`<span class="tick">✓</span><span class="em">${iconHTML(f,28)}</span><span class="nm">${f.name}</span>`;
+    el.addEventListener('click',()=>togglePick(f));
+    grid.appendChild(el);
+  });
+}
+function buildPresets(){
+  const g = $('presetGrid'); g.innerHTML='';
+  PRESETS.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='preset';
+    el.innerHTML=`<span class="ems">${p.ids.map(id=>iconHTML(FRUITS.find(f=>f.id===id),17)).join('')}</span>
+      <span class="pn">${p.name}</span><span class="pd">${p.desc}</span>`;
+    el.addEventListener('click',()=>{
+      A.init(); A.resume(); A.tap();
+      S.picked = p.ids.map(id=>FRUITS.find(f=>f.id===id));
+      autoAlloc(); syncGrid(); renderBasket();
+      document.querySelectorAll('.preset').forEach(x=>x.classList.remove('on'));
+      el.classList.add('on');
+    });
+    g.appendChild(el);
+  });
+}
+function syncGrid(){
+  document.querySelectorAll('.fruit-chip').forEach(el=>{
+    el.classList.toggle('on', S.picked.some(f=>f.id===el.dataset.id));
+  });
+}
+/* 一杯水果的颗数：单手配比（颗数）由这里自动分配，用户可用 ⊖⊕ 再微调 */
+function autoAlloc(){
+  const n = S.picked.length;
+  if(!n){ S.counts={}; return; }
+  const plan = n===1 ? [6] : n===2 ? [4,3] : n===3 ? [3,2,2] : [2,2,2,2];
+  S.counts = {};
+  S.picked.forEach((f,i)=> S.counts[f.id] = plan[i] || 2);
+}
+function pickTotal(){ return S.picked.reduce((a,f)=>a+(S.counts[f.id]||1), 0); }
+function togglePick(f){
+  A.init(); A.resume(); A.tap();
+  const i = S.picked.findIndex(x=>x.id===f.id);
+  if(i>=0) S.picked.splice(i,1);
+  else{
+    if(S.picked.length>=MAX_PICK){ flashTip('最多选 4 种哦～'); return; }
+    S.picked.push(f);
+  }
+  autoAlloc(); syncGrid(); renderBasket();
+  document.querySelectorAll('.preset').forEach(x=>x.classList.remove('on'));
+}
+function bumpCount(f, d){
+  const c = S.counts[f.id]||1;
+  const next = c + d;
+  if(next < 1 || next > MAX_PER) return;
+  if(d > 0 && pickTotal() >= MAX_TOTAL){ flashTip('杯子塞不下更多水果啦～'); return; }
+  S.counts[f.id] = next;
+  A.tap(); renderBasket();
+}
+function dropPick(f){
+  A.tap();
+  S.picked = S.picked.filter(x=>x.id!==f.id);
+  delete S.counts[f.id];
+  if(S.picked.length) autoAlloc();
+  syncGrid(); renderBasket();
+  document.querySelectorAll('.preset').forEach(x=>x.classList.remove('on'));
+}
+function renderBasket(){
+  const n = S.picked.length, total = pickTotal();
+  basketChips.innerHTML = n
+    ? S.picked.map(f=>{
+        const c = S.counts[f.id]||1;
+        return `<span class="bchip" data-id="${f.id}">
+          <span class="em" data-act="del" title="移除">${iconHTML(f,20)}</span>
+          <small data-act="del">${f.name}</small>
+          <button class="cnt" data-act="dec"${c<=1?' disabled':''}>−</button>
+          <span class="num">${c}</span>
+          <button class="cnt" data-act="inc"${c>=MAX_PER?' disabled':''}>+</button>
+        </span>`;
+      }).join('')
+    : '<span class="empty">还没选水果～</span>';
+  basketLabel.innerHTML = n
+    ? `共 <b>${total}</b> 颗 · ${n} 种水果${n>1?'（⊖⊕ 可自由配比）':''}`
+    : '已选';
+  basketChips.querySelectorAll('.bchip').forEach(chip=>{
+    const f = FRUITS.find(x=>x.id===chip.dataset.id);
+    chip.querySelectorAll('[data-act]').forEach(el=>{
+      el.addEventListener('click', e=>{
+        e.stopPropagation();
+        if(el.dataset.act === 'del') dropPick(f);
+        else bumpCount(f, el.dataset.act==='inc' ? 1 : -1);
+      });
+    });
+  });
+  startBtn.disabled = n===0;
+  startBtn.textContent = n===0 ? '先选一样水果吧' : `倒入 ${total} 颗水果，开始暴打 →`;
+}
+let tipTimer;
+function flashTip(t){ playTip.textContent=t; clearTimeout(tipTimer);
+  tipTimer=setTimeout(()=>{ playTip.textContent=''; },1600); }
+
+function show(screen){
+  [pickScreen,playScreen,resultScreen].forEach(s=>s.classList.remove('active'));
+  screen.classList.add('active');
+  backBtn.classList.toggle('hidden', screen!==playScreen);
+}
+
+/* ===================== 果肉物理 ===================== */
+/* 每块果肉在「杯内坐标」里活动：x 从左往右、y 从杯底往上，单位 px（区域 200×204） */
+const GRAV = 1500, FALL_CAP = 700;
+
+function cup2app(cx, cy){                     // 杯内坐标 → app 坐标（特效层用）
+  const l = $('liquidBox').getBoundingClientRect();
+  const a = $('app').getBoundingClientRect();
+  return { x: l.left - a.left + cx, y: l.bottom - a.top - cy };
+}
+function cupGeom(){                           // 杯口在 drop-layer 里的位置
+  const c = $('cupBody').getBoundingClientRect();
+  const d = dropLayer.getBoundingClientRect();
+  return { ox: c.left - d.left + 3, oy: c.top - d.top + 3 };
+}
+/* 按「杯容量 + 颗数」自动配尺寸：要让水果铺满杯底，又不能挤爆 */
+function fitScale(){
+  let maxS = 0, sumS = 0;
+  S.picked.forEach(f=>{ maxS = Math.max(maxS, f.size); sumS += f.size*(S.counts[f.id]||1); });
+  if(!sumS) return 1;
+  return Math.max(0.30, Math.min(1.15, CUP_W*0.34/maxS, CUP_W*2.2/sumS));
+}
+/* 不规则碎块的裁切形状（“小块”用） */
+const SHARDS = [
+  'polygon(8% 22%,54% 0%,96% 34%,84% 96%,30% 100%,2% 62%)',
+  'polygon(0% 30%,42% 4%,100% 22%,88% 78%,44% 100%,6% 74%)',
+  'polygon(14% 6%,72% 12%,100% 54%,66% 96%,18% 88%,0% 44%)',
+  'polygon(30% 0%,100% 18%,80% 66%,96% 100%,28% 92%,2% 48%)',
+];
+function makeBit(f, o){
+  const w = o.w;
+  const shape = o.shape || 'fruit';
+  const h = shape==='slice' ? Math.round(w*0.74) : w;
+  const b = { f, w, h, shape, initW:w, sk:1, body:!!o.body, dmg:o.dmg||0,
+              x:o.x, y:o.y, vx:o.vx||0, vy:o.vy||0,
+              rot:o.rot!==undefined?o.rot:(Math.random()*40-20), rotV:o.rotV||0,
+              buoy:w*0.22, stack:o.stack||0, sink:o.sink||0, ice:!!o.ice,
+              phase:Math.random()*6.28, bobSpd:.45+Math.random()*.55, sub:-1, fading:false };
+  const el = document.createElement('div');
+  el.className = o.ice ? 'ice' : ('bit' + (shape==='shard' ? ' shard' : shape==='slice' ? ' slice' : ''));
+  el.style.width = w+'px'; el.style.height = h+'px';
+  if(shape==='slice'){
+    el.style.setProperty('--pulp', f.pulp);
+    el.style.setProperty('--skin', shade(f.color, .04));
+  }else if(!o.ice){
+    el.innerHTML = iconHTML(f, w);
+  }
+  if(shape==='shard') el.style.clipPath = SHARDS[Math.floor(Math.random()*SHARDS.length)];
+  if(o.fadeIn){ el.style.opacity='0'; el.style.transition='opacity .3s'; }
+  fruitsLayer.appendChild(el);
+  b.el = el;
+  S.bits.push(b);
+  if(o.fadeIn) requestAnimationFrame(()=>{ el.style.opacity='1'; });
+  return b;
+}
+function renderBit(b, t, surface){
+  const el = b.el; if(!el || b.fading) return;
+  el.style.transform = `translate3d(calc(${b.x.toFixed(1)}px - 50%), calc(50% - ${b.y.toFixed(1)}px), 0)`
+    + ` rotate(${b.rot.toFixed(1)}deg) scale(${b.sk.toFixed(3)})`;
+  // 浸没程度：越沉越透 → 透过上层果汁看起来就是「泡在里面」。
+  // 这里只用 opacity 表达深浅，不用 filter：60+ 个元素各挂一个滤镜会各自开一层合成层，中低端机容易掉帧。
+  const over = (b.y + b.w*0.5) - surface;
+  let r = 0.5 - over/b.w; r = r<0?0:(r>1?1:r);
+  if(Math.abs(r - b.sub) > .04){
+    b.sub = r;
+    el.style.opacity = (0.88 + 0.12*(1-r)).toFixed(2);
+  }
+}
+function stepBits(dt, t){
+  const surface = S.liquid/100*CUP_H;
+  for(const b of S.bits){
+    if(b.dead || b.fading) continue;
+    const w = b.w;
+    const loY = w*0.44, hiY = CUP_H - w*0.44;
+    // 目标高度：浮在液面上（每 3 颗叠一层 → 铺满杯底）；被捶碎后 sink↑ → 逐渐沉进果汁内部
+    let ty = surface + b.buoy + b.stack - b.sink*(surface*0.60 + w*0.55);
+    if(b.ice) ty = surface + 4;
+    ty += Math.sin(t*b.bobSpd + b.phase)*1.6;
+    ty = Math.max(loY, Math.min(hiY, ty));
+
+    if(!b.ice && b.y > ty + 14 && b.vy > -20){
+      b.vy -= GRAV*dt;
+      if(b.vy < -FALL_CAP) b.vy = -FALL_CAP;
+    }else{
+      b.vy += (ty - b.y)*90*dt;
+      b.vy -= b.vy*Math.min(1, 9*dt);
+    }
+    b.y += b.vy*dt;
+    if(b.y < loY){ b.y = loY; if(b.vy < 0) b.vy = -b.vy*0.30; }
+
+    // 横向漂移 + 撞壁
+    b.x += b.vx*dt;
+    b.vx -= b.vx*Math.min(1, 2.8*dt);
+    const loX = w*0.46 + 2, hiX = CUP_W - w*0.46 - 2;
+    if(b.x < loX){ b.x = loX; b.vx = Math.abs(b.vx)*0.45; b.rotV += 40; }
+    if(b.x > hiX){ b.x = hiX; b.vx = -Math.abs(b.vx)*0.45; b.rotV -= 40; }
+
+    // 滚动：横向速度带来自转
+    b.rotV += (b.vx*3.0 - b.rotV)*Math.min(1, 3.4*dt);
+    b.rot += b.rotV*dt;
+    if(Math.abs(b.rotV) < 6) b.rot += Math.sin(t*b.bobSpd + b.phase)*0.09;
+
+    renderBit(b, t, surface);
+  }
+}
+function shakeBits(power){                    // 杯子一晃，果肉跟着滚
+  for(const b of S.bits){
+    if(b.dead || b.fading) continue;
+    b.vx += (Math.random()-.5)*150*power;
+    b.rotV += (Math.random()-.5)*420*power;
+    if(!b.ice) b.vy += Math.random()*70*power;
+  }
+}
+
+/* 主循环 */
+let lastT = performance.now();
+function loop(){
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  const dt = Math.min(0.045, (now-lastT)/1000);
+  lastT = now;
+  const t = now/1000;
+
+  if(S.phase==='smash' || S.phase==='done'){
+    S.hitTimes = S.hitTimes.filter(x=>now-x<1000);
+    S.cps = S.hitTimes.length;
+    if(S.phase==='smash'){
+      cpsVal.innerHTML = S.cps.toFixed(1)+'<small>次/秒</small>';
+      if(S.cps > S.peakCps) S.peakCps = S.cps;
+    }
+  }
+  stepBits(dt, t);
+}
+requestAnimationFrame(loop);
+
+/* ===================== 第二屏：落果 → 干捶捣碎 → 倒茶 → 继续捶 ===================== */
+function startGame(){
+  A.init(); A.resume();
+  const gid = ++S.gameId;                    // 作废上一局残留的定时器
+  S.liquid=0; S.smash=0; S.hits=0; S.hitTimes=[]; S.cps=0; S.peakCps=0; S.bits=[]; S.cracks=0;
+  S.teaPoured=false; S.phase='drop';
+  fruitsLayer.innerHTML=''; dropLayer.innerHTML=''; pourFx.innerHTML='';
+  $('straw').classList.remove('in'); $('slice').classList.remove('in');
+  cupWrap.classList.remove('away'); levelChip.classList.remove('full');
+  pestleEl.classList.remove('wet');
+  pestleEl.style.transform='';
+  S.scale = fitScale();
+  // 整杯水果要被打多久才全部捣碎：总击数的 70% 花在「完整水果」上，剩下打碎块
+  S.totalFruit = Math.max(1, pickTotal());
+  S.bodyLife = Math.max(5, Math.round(TOTAL_HITS * 0.70 / S.totalFruit));
+  updateLiquid(true); updateMeters();
+  smashHint.classList.add('off');
+  playTip.textContent='水果正在落杯…';
+  paintJuice(liquidEl, juiceColor());        // 杯里从头到尾都是果汁色
+  show(playScreen);
+
+  // 展开落杯序列：按「轮次」轮流投放 → 多种水果自然混合，而不是一种倒完再倒下一种
+  const seq = [];
+  const maxC = Math.max(...S.picked.map(f=>S.counts[f.id]||1));
+  for(let r=0; r<maxC; r++)
+    S.picked.forEach(f=>{ if((S.counts[f.id]||1) > r) seq.push(f); });
+
+  const n = seq.length;
+  const gap = Math.max(125, Math.min(230, 1200/n));
+  seq.forEach((f,i)=> setTimeout(()=>{ if(gid===S.gameId) dropFruit(f,i,n); }, 260 + i*gap));
+  // 水果落齐 → 直接开捶。茶汤要等水果捣碎了才倒，所以这里不加水
+  setTimeout(()=>{
+    if(gid!==S.gameId || S.phase!=='drop') return;
+    S.phase='smash'; S.t0=performance.now();
+    smashHint.classList.remove('off');
+    smashHint.innerHTML=`先把水果捣碎！<small>锤烂水果加入茶底，捶 ${TOTAL_HITS} 下以上才满杯哦</small>`;
+    playTip.textContent='快点，把水果砸烂 👆';
+  }, 260 + n*gap + 380);
+}
+
+function dropFruit(f,i,n){
+  const w = Math.round(f.size*S.scale);
+  // 黄金角环形散布：颗数多也不会全堆在正中间
+  const ang = i*2.399 + Math.random()*0.5;
+  const cx = Math.max(w/2+4, Math.min(CUP_W-w/2-4,
+    CUP_W/2 + Math.cos(ang)*(CUP_W*0.3) + (Math.random()-.5)*14));
+  const g = cupGeom();
+
+  // ① 从杯口上方落下（在杯子本体之外，所以用独立的掉落层）
+  const el = document.createElement('div');
+  el.className='drop-bit';
+  el.style.width = w+'px'; el.style.height = w+'px';
+  el.innerHTML = iconHTML(f, w);
+  el.style.left = (g.ox + cx)+'px';
+  el.style.top  = (g.oy + 52 - w*0.5)+'px';
+  el.style.transform = `translate(-50%,-50%) translateY(-${(110+w*0.5).toFixed(0)}px) rotate(-12deg)`;
+  el.style.transition = 'transform .42s cubic-bezier(.5,.05,.9,.5)';
+  dropLayer.appendChild(el);
+  requestAnimationFrame(()=>{ el.style.transform='translate(-50%,-50%) translateY(0) rotate(6deg)'; });
+
+  // ② 落进杯子 → 交给果肉物理，砸在液面上溅一下
+  setTimeout(()=>{
+    if(!el.isConnected) return;              // 这一局已被重开，作废
+    el.remove();
+    A.plop();
+    splash(6, f.color, cup2app(cx, CUP_H*0.55));
+    // 每 3 颗叠一层：落杯后是一杯堆起来的水果，而不是全挤在同一高度
+    makeBit(f, {w, body:true, dmg:0, x:cx, y:CUP_H - w*0.15, vy:-300,
+                stack: Math.floor(i/3)*w*0.34,
+                rot:Math.random()*40-20, rotV:(Math.random()-.5)*220});
+  }, 420);
+}
+function addIce(){
+  for(let i=0;i<3;i++){
+    makeBit(null, {ice:true, w:20, x: 30 + i*70 + Math.random()*20,
+                   y: 40 + Math.random()*20, rot: Math.random()*40-20,
+                   rotV:(Math.random()-.5)*90, fadeIn:true});
+  }
+}
+
+/* 水果捣碎之后：拿起小量杯，倾斜着把茶汤倒进杯里。
+   只抬水位、不改颜色 —— 这杯的颜色始终由水果配比决定。 */
+function pourTea(gid){
+  if(S.teaPoured || S.phase!=='smash') return;
+  S.teaPoured = true;
+  playTip.textContent='倒入茶汤…';
+
+  const g = cupGeom();
+  // ① 小量杯：从右上方斜入 → 倾斜 → 倒完抬起离场
+  const jug = document.createElement('div');
+  jug.className='tea-jug';
+  jug.innerHTML = '<div class="tj-glass"><div class="tj-liq"></div>'
+                + '<div class="tj-marks"><i></i><i></i><i></i></div></div>'
+                + '<div class="tj-spout"></div><div class="tj-handle"></div>';
+  jug.style.left = (g.ox + 122)+'px';
+  jug.style.top  = (g.oy - 58)+'px';
+  dropLayer.appendChild(jug);
+  const jl = jug.querySelector('.tj-liq');
+
+  // ② 茶流：从量杯尖嘴垂下，落到液面（随水位上升自动缩短）
+  const stream = document.createElement('div');
+  stream.className='tea-stream';
+  stream.style.left=(g.ox + CUP_W*0.5 - 4.5)+'px';
+  stream.style.top=(g.oy - 14)+'px';
+  stream.style.height='14px';
+  dropLayer.appendChild(stream);
+  requestAnimationFrame(()=>{ stream.classList.add('on'); });
+
+  // ③ 量杯倾到位 → 茶汤流出：水位平滑上涨，颜色不动
+  setTimeout(()=>{
+    if(gid!==S.gameId) return;
+    A.pour(1.0);
+    jl.style.height='16%';                                   // 量杯里的茶在减少
+    liquidEl.style.transition='height 1.5s cubic-bezier(.35,.4,.5,.95),background .45s,opacity .25s';
+    S.liquid = Math.min(WATER_LINE, S.liquid + TEA_ADD);
+    updateLiquid();
+    stream.style.height = Math.max(20, 272 - S.liquid/100*CUP_H)+'px';
+    innerSplash(5, S.liquid/100*CUP_H, TEA_COLOR);
+    addIce();
+    smashHint.innerHTML=`继续捶！<small>把果肉砸得更碎，加速加速</small>`;
+  }, 560);
+
+  setTimeout(()=>{ stream.classList.remove('on'); }, 2050);
+  setTimeout(()=>{ if(gid===S.gameId) liquidEl.style.transition=''; }, 2200);
+  setTimeout(()=>{ stream.remove(); jug.remove(); }, 2700);
+}
+
+/* ===================== 捶打 —— 核心手感 ===================== */
+let lastHitAt=0, shakeTimer, swingTimer;
+
+/* 捣棒下落时不是一条死直线：朝点击的位置略微偏一点，再叠一点随机，
+   横向 ±10px、倾斜 ±6°，轨迹自然得多 */
+function swingPestle(ev){
+  let gx = 0;
+  if(ev && typeof ev.clientX === 'number'){
+    const b = $('hitzone').getBoundingClientRect();
+    gx = clamp(-1, ((ev.clientX - b.left)/b.width)*2 - 1, 1);
+  }
+  const offX = gx*8 + (Math.random()-.5)*7;
+  const tilt = gx*4.4 + (Math.random()-.5)*3.6;
+  pestleEl.style.transform = `translate(${offX.toFixed(1)}px, 120px) rotate(${tilt.toFixed(2)}deg)`;
+  clearTimeout(swingTimer);
+  swingTimer = setTimeout(()=>{ pestleEl.style.transform=''; }, 64);
+}
+
+function hit(ev){
+  A.init(); A.resume();
+  if(S.phase!=='smash') return;
+  const now=performance.now();
+  if(now-lastHitAt < 55) return;
+  lastHitAt=now;
+  S.hits++;
+  S.hitTimes.push(now);
+  S.hitTimes = S.hitTimes.filter(t=>now-t<1000);
+  const cps=S.hitTimes.length;
+
+  // 干捶阶段：水果自己渗出一点点汁（水位慢慢起，茶还没倒）
+  // 倒茶之后：每下出汁固定上限，手速拉满也正好 100 下满杯，任何手速都不会少于 100 下
+  const gain = S.hits <= TEA_AT
+    ? DRY_GAIN
+    : Math.min(1.02, POST_BASE + Math.min(cps,9)*POST_CPS);
+  S.liquid = Math.min(WATER_LINE, S.liquid+gain);
+  S.smash  = Math.min(100, S.hits * (100/TOTAL_HITS));
+
+  swingPestle(ev);
+  cupWrap.classList.add('shake');
+  clearTimeout(shakeTimer);
+  shakeTimer = setTimeout(()=>cupWrap.classList.remove('shake'), 120);
+  rippleEl.classList.remove('go'); void rippleEl.offsetWidth; rippleEl.classList.add('go');
+  A.smash(S.liquid/WATER_LINE);
+  // 杯内四溅：汁水从液面往上溅起再落回（颗粒小、数量克制，不遮水果）
+  innerSplash(2+Math.floor(Math.random()*3), S.liquid/100*CUP_H);
+
+  shakeBits(Math.min(1.5, 0.55 + cps*0.12));
+  mushFruit(cps);
+
+  // 水果已经捣碎 → 这时候才倒茶汤
+  if(!S.teaPoured && S.hits >= TEA_AT) pourTea(S.gameId);
+
+  if(S.hits%10===0) floatText('+'+gain.toFixed(1)+'%', ev);
+  if(cps>=6 && S.hits%20===0) floatText('手速爆表 x'+cps, null, true);
+
+  updateLiquid(); updateMeters();
+  if(S.liquid >= WATER_LINE-1e-3) finish();
+}
+
+/* 越捶越碎：整颗 → 大块 → 中块 → 小块 → 碎渣 → 化进果汁。
+   碎裂程度严格跟着击数走（前 70% 的击数用来把「完整水果」打光），
+   所以不会出现「还没到 100 下水果就碎没了」。 */
+const aliveBits = () => S.bits.filter(b=>!b.dead && !b.fading && !b.ice).length;
+
+function mushFruit(cps){
+  // ① 所有果肉继续往汁里沉（碎块沉得更快，尽快没入果汁内部）
+  for(const b of S.bits){
+    if(!b.ice && !b.dead && !b.fading) b.sink = Math.min(1, b.sink + (b.body ? 0.030 : 0.052));
+  }
+  // ② 每击第一下永远砸「完整水果」（按被砸次数最少、个头最大轮着挑 → 整杯均匀碎掉，
+  //    碎裂进度严格跟住击数）；手速快时奖励第二下 —— 优先把大碎块砸得更碎
+  const k = (cps>=6 && aliveBits()>3) ? 2 : 1;
+  for(let i=0;i<k;i++){
+    let pool;
+    if(i===0){
+      pool = S.bits.filter(b=>!b.ice && !b.dead && !b.fading && b.body);
+      if(!pool.length) pool = S.bits.filter(b=>!b.ice && !b.dead && !b.fading && b.w > 13);
+    }else{
+      pool = S.bits.filter(b=>!b.ice && !b.dead && !b.fading && !b.body && b.w > 14);
+      if(!pool.length) pool = S.bits.filter(b=>!b.ice && !b.dead && !b.fading && b.body);
+      if(!pool.length) pool = S.bits.filter(b=>!b.ice && !b.dead && !b.fading && b.w > 13);
+    }
+    if(!pool.length) break;
+    pool.sort((a,b)=> ((a.hitsOn||0)-a.w/400) - ((b.hitsOn||0)-b.w/400));
+    const top = pool.slice(0, Math.min(3, pool.length));
+    const t = top[Math.floor(Math.random()*top.length)];
+    t.hitsOn = (t.hitsOn||0) + 1;
+    if(t.body) crackBody(t); else chipShard(t);
+  }
+  // ③ 碎渣慢慢融进果汁
+  for(const b of S.bits){
+    if(!b.ice && !b.body && !b.dead && !b.fading && b.w <= 13 && Math.random() < 0.34) fizz(b);
+  }
+}
+
+/* 一颗完整水果被砸掉一块：飞出 2~5 个碎块/果片，本体一点点被削，砸满就整颗化掉 */
+function crackBody(p){
+  p.dmg = Math.min(1, p.dmg + 1/S.bodyLife);
+  const pw = p.w;
+  const won = p.dmg >= 1;
+  const prog = clamp01(S.hits/TOTAL_HITS);
+  // 越到后面越碎：早期飞出 2 块大的，后期 4~5 块小的
+  const n = won ? 5 : (prog < .3 ? 2 : prog < .62 ? 3 : 4);
+  for(let i=0;i<n;i++){
+    if(aliveBits() > MAX_BITS) break;
+    const isSlice = Math.random() < (0.28 + prog*0.24);
+    // 尺寸刻意拉开档次：大块和小片混着飞，不会一整批都是一个大小
+    const kk = isSlice ? (0.20 + Math.random()*0.28) : (0.13 + Math.random()*0.30);
+    const sw = Math.max(9, Math.round(pw*kk));
+    const dir = (i/n)*6.283 + Math.random()*1.1;
+    makeBit(p.f, {
+      shape: isSlice ? 'slice' : 'shard',
+      w: sw,
+      x: clamp(sw*0.5+3, p.x + Math.cos(dir)*pw*0.42, CUP_W-sw*0.5-3),
+      y: clamp(sw*0.5+2, p.y + Math.sin(dir)*pw*0.38, CUP_H-sw*0.5-2),
+      vx: Math.cos(dir)*(70+Math.random()*90),
+      vy: Math.sin(dir)*(40+Math.random()*50) + 30,
+      rot: Math.random()*360, rotV:(Math.random()-.5)*430,
+      sink: Math.min(1, p.sink + 0.34), fadeIn:true     // 新碎片出生就在液面以下，别浮着
+    });
+  }
+  S.cracks++;
+  if(won){                                    // 整颗被打光
+    fizz(p);
+  }else{                                      // 只轻微被削，碎裂感来自飞出的块
+    p.sk = 1 - p.dmg*0.16;
+    p.rotV += (Math.random()-.5)*300;
+    p.vx   += (Math.random()-.5)*90;
+    p.vy   += 40 + Math.random()*40;
+  }
+}
+
+/* 大碎块又被砸中 → 裂成 2~3 个更小的块，自己缩一圈；碎到太小就化汁 */
+function chipShard(s){
+  const sw0 = s.w;
+  const n = sw0 > 30 ? 3 : 2;
+  for(let i=0;i<n;i++){
+    if(aliveBits() > MAX_BITS) break;
+    const sw = Math.max(8, Math.round(sw0 * (0.40 + Math.random()*0.30)));
+    const dir = (i/n)*6.283 + Math.random()*1.1;
+    makeBit(s.f, {
+      shape: Math.random()<0.5 ? 'shard' : 'slice',
+      w: sw,
+      x: clamp(sw*0.5+3, s.x + Math.cos(dir)*sw0*0.36, CUP_W-sw*0.5-3),
+      y: clamp(sw*0.5+2, s.y + Math.sin(dir)*sw0*0.32, CUP_H-sw*0.5-2),
+      vx: Math.cos(dir)*(60+Math.random()*80),
+      vy: Math.sin(dir)*(35+Math.random()*45) + 25,
+      rot: Math.random()*360, rotV:(Math.random()-.5)*420,
+      sink: Math.min(1, s.sink + 0.16), fadeIn:true
+    });
+  }
+  s.w = Math.max(9, sw0*0.55);
+  s.gear = (s.gear||0) + 1;
+  s.el.style.width = s.w+'px';
+  s.el.style.height = (s.shape==='slice' ? Math.round(s.w*0.74) : s.w)+'px';
+  s.rotV += (Math.random()-.5)*380;
+  if(s.gear >= 2 || s.w <= 10) fizz(s);
+}
+
+/* 碎到化进果汁里 */
+function fizz(b){
+  if(b.fading) return;
+  b.fading = true;
+  const el = b.el;
+  el.style.transition = 'opacity .8s ease-in, transform .8s ease-in';
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform += ' scale(.3)'; }, 30);
+  setTimeout(()=>{ b.dead = true; el.remove(); }, 900);
+}
+
+/* ===================== 特效 ===================== */
+function splash(count, colorHex, at){
+  const color = colorHex || mixJuice(S.picked.length?S.picked:FRUITS, S.counts);
+  const app = $('app').getBoundingClientRect();
+  const b = $('hitzone').getBoundingClientRect();
+  const p = at || {x: b.left-app.left+b.width/2, y: b.top-app.top+b.height*.3};
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    const sz=4+Math.random()*7, ang=(-160+Math.random()*140)*Math.PI/180, dist=36+Math.random()*72;
+    d.className='drop';
+    d.style.width=sz+'px'; d.style.height=sz+'px';
+    d.style.left=(p.x+(Math.random()-.5)*78)+'px';
+    d.style.top=(p.y+(Math.random()-.5)*26)+'px';
+    d.style.background = Math.random()<.35 ? shade(color,.45) : color;
+    d.style.setProperty('--tx',(Math.cos(ang)*dist).toFixed(1)+'px');
+    d.style.setProperty('--ty',(Math.sin(ang)*dist-18).toFixed(1)+'px');
+    d.style.animationDuration=(.45+Math.random()*.32)+'s';
+    pourFx.appendChild(d);
+    setTimeout(()=>d.remove(),900);
+  }
+}
+/* 杯内四溅：汁水在液面以上弹起、回落。层在果肉之上、茶汤之下，
+   液滴细小（3~7px）、每击只有 2~4 颗，不会糊住水果 */
+function innerSplash(count, surf, hex){
+  const fx=$('innerFx');
+  const color = hex || juiceColor();
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    const sz=3+Math.random()*4;
+    d.className='in-drop';
+    d.style.width=sz.toFixed(1)+'px'; d.style.height=sz.toFixed(1)+'px';
+    d.style.left=(CUP_W*0.5+(Math.random()-.5)*84).toFixed(1)+'px';
+    d.style.bottom=Math.max(6,surf-2).toFixed(1)+'px';
+    d.style.background = Math.random()<.4 ? shade(color,.42) : color;
+    d.style.setProperty('--ix',((Math.random()-.5)*58).toFixed(1)+'px');
+    d.style.setProperty('--iy',(-(22+Math.random()*34)).toFixed(1)+'px');
+    fx.appendChild(d);
+    setTimeout(()=>d.remove(),680);
+  }
+}
+function floatText(txt, ev, hot){
+  const el=document.createElement('div');
+  el.className='float-txt'; el.textContent=txt;
+  if(hot) el.style.color='#E8455F';
+  const app=$('app').getBoundingClientRect();
+  const b=$('hitzone').getBoundingClientRect();
+  let x,y;
+  if(hot){                                     // 手速爆表：杯口上方居中
+    x=b.left-app.left+b.width/2; y=b.top-app.top+b.height*.12;
+  }else if(ev && ev.clientX!==undefined){      // 戳哪儿飘哪儿
+    x=ev.clientX-app.left+(Math.random()-.5)*70; y=ev.clientY-app.top-38;
+  }else{
+    x=b.left-app.left+b.width/2+(Math.random()-.5)*110; y=b.top-app.top+b.height*.26;
+  }
+  el.style.left=x+'px'; el.style.top=y+'px';
+  pourFx.appendChild(el);
+  const alives=pourFx.querySelectorAll('.float-txt');
+  if(alives.length>4) alives[0].remove();      // 避免刷屏
+  setTimeout(()=>el.remove(),800);
+}
+
+function updateLiquid(instant){
+  liquidEl.style.height=S.liquid+'%';
+  // 只在自己需要时才改 transition，别覆盖倒茶时用的那条长过渡
+  if(instant) liquidEl.style.transition='none';
+  else if(liquidEl.style.transition === 'none') liquidEl.style.transition='';
+  liquidEl.style.opacity = S.liquid < 0.8 ? '0' : '1';
+  levelChip.textContent = Math.round(S.liquid)+'%';
+  levelChip.style.bottom = ((S.liquid/100)*CUP_H)+'px';
+  rippleEl.style.bottom = ((S.liquid/100)*CUP_H)+'px';
+  if(S.liquid>=WATER_LINE-.5) levelChip.classList.add('full');
+  // 汁水漫过杵头下半段时，杵头看起来就是泡在果汁里的
+  pestleEl.classList.toggle('wet', S.liquid > 30);
+}
+function updateMeters(){ smashVal.textContent = Math.min(100,Math.round(S.smash))+'%'; }
+
+$('hitzone').addEventListener('pointerdown', e=>{ e.preventDefault(); hit(e); });
+smashHint.addEventListener('pointerdown', e=>{ e.preventDefault(); hit(e); });
+
+/* ===================== 完成 → 倒杯 → 插吸管 ===================== */
+function pourStream(){
+  const color = juiceColor();
+  const at = cup2app(CUP_W*0.42, CUP_H*0.85);
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      const sz=5+Math.random()*7, ang=(50+Math.random()*80)*Math.PI/180;
+      d.className='drop';
+      d.style.width=sz+'px'; d.style.height=sz+'px';
+      d.style.left=(at.x+(Math.random()-.2)*90)+'px';
+      d.style.top=(at.y)+'px';
+      d.style.background = Math.random()<.3 ? shade(color,.4) : color;
+      d.style.setProperty('--tx',(Math.cos(ang)*46).toFixed(1)+'px');
+      d.style.setProperty('--ty',(Math.sin(ang)*250).toFixed(1)+'px');
+      d.style.animationDuration=(.6+Math.random()*.3)+'s';
+      pourFx.appendChild(d);
+      setTimeout(()=>d.remove(),1100);
+    }, i*65);
+  }
+}
+
+function finish(){
+  if(S.phase==='done') return;
+  S.phase='done';
+  const used = Math.max(1, Math.round((performance.now()-S.t0)/1000));
+  smashHint.classList.add('off'); playTip.textContent='完成！';
+  A.done();
+  for(const b of S.bits) if(!b.dead && b.el){ b.fading=true; b.el.style.transition='opacity .5s'; b.el.style.opacity='0'; }
+
+  const box=$('hitzone').getBoundingClientRect(), app=$('app').getBoundingClientRect();
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const s=document.createElement('div');
+      s.className='sparkle'; s.textContent=['✨','💫','⭐'][i%3];
+      s.style.left=(box.left-app.left+Math.random()*box.width)+'px';
+      s.style.top=(box.top-app.top+box.height*.2+Math.random()*80)+'px';
+      pourFx.appendChild(s); setTimeout(()=>s.remove(),1000);
+    }, i*60);
+  }
+
+  setTimeout(()=>{ cupWrap.classList.add('away'); A.pour(1); pourStream(); }, 380);
+
+  setTimeout(()=>{
+    buildResult(used);
+    show(resultScreen);
+    // 成品杯：果汁注入 + 果肉按「份数」铺进去（配比重的果肉更多）
+    const gl=$('glassLiquid');
+    gl.innerHTML='';
+    const liq=document.createElement('div');
+    liq.className='liquid';
+    liq.style.height='0%';
+    liq.innerHTML='<div class="foam"></div>'+
+      '<div class="wave w2"><svg viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0 10 Q 25 2 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z"/></svg></div>'+
+      '<div class="wave w1"><svg viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0 10 Q 25 2 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z"/></svg></div>';
+    gl.appendChild(liq);
+    paintJuice(liq, juiceColor(), 0.84);
+    normalizeWaves(liq);
+    // 果肉排在果汁「后面」appendChild → 浮在果汁上层，看得见
+    const pool = [];
+    S.picked.forEach(f=>{ for(let i=0;i<(S.counts[f.id]||1);i++) pool.push(f); });
+    const bitEls=[];
+    const total = Math.min(14, Math.max(7, pool.length + 2));
+    for(let i=0;i<total;i++){
+      const f = pool[i % pool.length];
+      const gs = 13 + Math.random()*9;
+      const d = document.createElement('div');
+      d.className='glass-bit';
+      d.style.width = gs+'px'; d.style.height = gs+'px';
+      d.style.left = (10+Math.random()*74)+'%';
+      d.style.bottom = (6+Math.random()*54)+'%';
+      d.style.animationDelay = (-Math.random()*3.4).toFixed(1)+'s';
+      d.innerHTML = iconHTML(f, gs);
+      d.firstElementChild.style.transform = `rotate(${(Math.random()*70-35).toFixed(0)}deg)`;
+      gl.appendChild(d); bitEls.push(d);
+    }
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ liq.style.height='84%'; }));
+    setTimeout(()=>{ bitEls.forEach((d,i)=>setTimeout(()=>d.classList.add('in'), i*70)); }, 620);
+    setTimeout(()=>{ A.straw(); $('straw').classList.add('in'); $('slice').classList.add('in');
+      // 插好吸管 → 撮一口（一次性，不循环）
+      setTimeout(()=>A.slurp(), 650);
+      setTimeout(()=>{ liq.style.height='77%'; }, 500);   // 水位跟着吸吮一起被吸下去
+    }, 950);
+  }, 1150);
+}
+
+function buildResult(used){
+  const juice = juiceColor();
+  const names = S.picked.map(f=>f.name);
+  const title = names.length<=3 ? names.join('')+'鲜果茶' : names[0]+names[1]+'混合鲜果茶';
+  $('resName').textContent = title;
+  $('resName').style.color = shade(juice,-.3);
+  // 配比串：3柠檬 + 2草莓
+  const ratioStr = S.picked.map(f=>`${S.counts[f.id]||1}${f.name}`).join('+');
+
+  const [r,g,b]=hex2rgb(juice);
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d>1e-6){ if(mx===r) h=((g-b)/d+6)%6; else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; }
+  let tone;
+  if(d < .12) tone='温柔奶感系';
+  else if(h<20 || h>=340) tone='热烈红粉系';
+  else if(h<42) tone='暖阳橙系';
+  else if(h<72) tone='明亮柠檬黄系';
+  else if(h<160) tone='清新青绿系';
+  else if(h<200) tone='薄荷青碧系';
+  else if(h<252) tone='冷冽蓝莓系';
+  else if(h<292) tone='梦幻紫蓝系';
+  else tone='莓紫玫瑰系';
+  $('resSub').textContent = `${ratioStr} · ${tone}`;
+
+  const p=S.peakCps;
+  let rank,emoji;
+  if(p>=7.5){rank='神之手';emoji='👑';}
+  else if(p>=5.5){rank='暴打高手';emoji='🥇';}
+  else if(p>=3.5){rank='解压达人';emoji='🥈';}
+  else if(p>=1.5){rank='小试身手';emoji='🥉';}
+  else {rank='温柔派';emoji='🌱';}
+  const badge=$('resRank');
+  badge.textContent = emoji+' '+rank;
+  badge.style.animation='none'; void badge.offsetWidth; badge.style.animation='';
+
+  $('stHits').innerHTML = S.hits+'<small> 下</small>';
+  $('stCps').innerHTML  = p.toFixed(1)+'<small> 次/秒</small>';
+  $('stTime').innerHTML = used+'<small> 秒</small>';
+
+  // 甜酸按「颗数」加权：3 颗柠檬当然比 1 颗酸
+  const cOf = f => S.counts[f.id]||1;
+  const sweet=S.picked.reduce((a,f)=>a+f.sweet*cOf(f),0), sour=S.picked.reduce((a,f)=>a+f.sour*cOf(f),0);
+  const total = pickTotal();
+  const pills=[];
+  if(sweet-sour>=11) pills.push(['甜度爆表 🍯','lemon']);
+  else if(sweet-sour>=4) pills.push(['偏甜口 🍬','lemon']);
+  else if(sour-sweet>=11) pills.push(['酸到眯眼 🍋','lemon']);
+  else if(sour-sweet>=4) pills.push(['清爽微酸 🌿','mint']);
+  else pills.push(['酸甜平衡 ⚖️','']);
+  if(S.picked.length>=3) pills.push(['复合果香 🎨','']);
+  if(total>=5) pills.push([`${total} 颗果肉 🧺`,'']);
+  if(S.picked.some(f=>f.id==='blueberry'||f.id==='grape'||f.id==='dragon')) pills.push(['花青素满满 💜','mint']);
+  if(S.picked.some(f=>f.id==='lemon'||f.id==='pomelo')) pills.push(['维C补给 ✅','mint']);
+  if(S.picked.some(f=>f.id==='guava')) pills.push(['纤维感 🥄','']);
+  if(S.picked.some(f=>f.id==='coconut')) pills.push(['椰香浓郁 🥥','lemon']);
+  if(S.picked.length===1) pills.push(['纯粹单果味 🍹','lemon']);
+  $('flavor').innerHTML = pills.map(x=>`<span class="fpill ${x[1]}">${x[0]}</span>`).join('');
+
+  $('slice').style.setProperty('--sc', S.picked[0].color);
+  $('slice').style.setProperty('--sp', S.picked[0].pulp);
+}
+
+/* ===================== 按钮 ===================== */
+startBtn.addEventListener('click', ()=>{ A.init(); A.resume(); startGame(); });
+$('againBtn').addEventListener('click', ()=>{ A.tap(); startGame(); });
+function resetToPick(){
+  S.gameId++;                                // 掐掉在途的落果/开打定时器
+  S.phase='pick'; S.bits=[]; S.liquid=0; S.smash=0; S.cracks=0; S.teaPoured=false;
+  cupWrap.classList.remove('away'); levelChip.classList.remove('full');
+  pestleEl.classList.remove('wet'); pestleEl.style.transform='';
+  fruitsLayer.innerHTML=''; dropLayer.innerHTML=''; pourFx.innerHTML='';
+  $('straw').classList.remove('in'); $('slice').classList.remove('in');
+  updateLiquid(true); updateMeters();
+  show(pickScreen); renderBasket();
+}
+$('repickBtn').addEventListener('click', ()=>{ A.tap(); resetToPick(); });
+backBtn.addEventListener('click', ()=>{ S.muted||A.tap(); resetToPick(); });
+soundBtn.addEventListener('click', ()=>{
+  A.init(); A.resume();
+  S.muted=!S.muted;
+  soundBtn.textContent = S.muted?'🔇':'🔊';
+  if(!S.muted) A.tap();
+});
+
+buildGrid(); buildPresets(); renderBasket(); normalizeWaves(document); updateLiquid(true);
+</script>
+</body>
+</html>
